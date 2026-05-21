@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN SDG Action Portal | Group Assignment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfb;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #10b981;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link.active {
+            color: #10b981 !important;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .sdg-tile {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0.75rem;
+            color: white;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .sdg-tile:hover {
+            transform: scale(1.03);
+            z-index: 10;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            filter: brightness(1.1);
+        }
+
+        .sdg-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+            opacity: 0.9;
+        }
+
+        .sdg-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+            word-wrap: break-word;
+        }
+
+        @media (min-width: 640px) {
+            .sdg-title { font-size: 0.75rem; }
+        }
+
+        .square-frame {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 3px solid #f1f5f9;
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+            background-color: rgba(15, 23, 42, 0.95);
+        }
+		#page-about .space-y-2 p { 
+    text-align: justify; 
+    hyphens: auto; 
+    word-break: break-word; 
+}
+    </style>
+</head>
+<body class="text-slate-700 antialiased">
+
+    <!-- Header Navigation -->
+    <header class="sticky-header text-white border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo Area -->
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center font-bold text-white">SDG</div>
+                    <span class="font-bold text-xl tracking-tight hidden sm:block">Ethics and Sustainability - Group 10</span>
+                </div>
+
+                <!-- Horizontal Navigation Links -->
+                <nav id="main-nav" class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <button onclick="showPage('home')" data-page="home" class="nav-link active py-1">Homepage</button>
+                    <button onclick="showPage('about')" data-page="about" class="nav-link py-1">About Us</button>
+                    <button onclick="showPage('goals')" data-page="goals" class="nav-link py-1">SDG 17 Goals</button>
+                    <button onclick="showPage('actnow')" data-page="actnow" class="nav-link py-1">SDG Act Now</button>
+                    <button onclick="showPage('references')" data-page="references" class="nav-link py-1 text-slate-300">Reference List</button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-md hover:bg-slate-800">
+                        <span class="text-2xl">☰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-t border-slate-800 p-4 space-y-4 text-center">
+            <button onclick="showPage('home'); toggleMobileMenu();" data-page="home" class="block w-full py-2 text-slate-300">Home</button>
+            <button onclick="showPage('about'); toggleMobileMenu();" data-page="about" class="block w-full py-2 text-slate-300">About Us</button>
+            <button onclick="showPage('goals'); toggleMobileMenu();" data-page="goals" class="block w-full py-2 text-slate-300">SDG 17 Goals</button>
+            <button onclick="showPage('actnow'); toggleMobileMenu();" data-page="actnow" class="block w-full py-2 text-slate-300">SDG Act Now</button>
+            <button onclick="showPage('references'); toggleMobileMenu();" data-page="references" class="block w-full py-2 text-slate-300">Reference List</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- 第 1 页: 首页 -->
+<section id="page-home" class="page-section">
+    
+    <div class="relative overflow-hidden bg-slate-50/50 group/home">
+        
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <img src="background.jpg" 
+                 alt="Sustainable Future Background" 
+                 class="w-full h-full object-cover opacity-55 mix-blend-darken transition-transform duration-[1500ms] ease-out scale-100 group-hover/home:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-slate-50/50"></div>
+        </div>
+
+        <div class="relative z-10">
+            <div class="max-w-3xl mx-auto text-center mb-16 pt-24 pb-16 px-6">
+                <h1 class="text-4xl font-extrabold text-slate-900 sm:text-5xl mb-6 drop-shadow-sm">
+                    Building a Sustainable 2030
+                </h1>
+                <p class="text-lg text-slate-700 leading-relaxed font-medium bg-white/40 backdrop-blur-sm rounded-xl p-4 inline-block shadow-sm shadow-slate-100/50 border border-white/60">
+                    The 2030 Agenda for Sustainable Development, adopted by all United Nations Member States in 2015, provides a shared blueprint for peace and prosperity for people and the planet (UN, 2015).
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-16 px-6 max-w-7xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-md shadow-slate-200/50 border border-slate-200/60 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-slate-300">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        Why UNs SDGs Guidance Matters
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                        The world faces interconnected challenges ranging from climate change to systemic inequality. The SDGs act as a universal framework to address these "wicked problems" simultaneously. By providing clear targets, the guidance ensures that development in one area does not compromise sustainability in another, fostering a global partnership that leaves no one behind (Global Goals, 2023).
+                    </p>
+                </div>
+
+                <div class="bg-emerald-50/90 backdrop-blur-md p-8 rounded-2xl border border-emerald-100 shadow-md shadow-emerald-100/30 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-emerald-50">
+                    <h3 class="text-lg font-bold text-emerald-900 mb-2">The Mission</h3>
+                    <p class="text-emerald-800 text-sm opacity-90 italic leading-relaxed">
+                        "End poverty, protect the planet and ensure that all people enjoy peace and prosperity by 2030."
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white rounded-full text-xs font-bold text-emerald-700 shadow-sm border border-emerald-100 transition-transform hover:scale-105 cursor-default">169 Targets</span>
+                        <span class="px-3 py-1 bg-white rounded-full text-xs font-bold text-emerald-700 shadow-sm border border-emerald-100 transition-transform hover:scale-105 cursor-default">232 Indicators</span>
+                        <span class="px-3 py-1 bg-white rounded-full text-xs font-bold text-emerald-700 shadow-sm border border-emerald-100 transition-transform hover:scale-105 cursor-default">193 Nations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <div class="bg-white pt-12 pb-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-8 border-b pb-2">
+                <h3 class="text-xl font-bold text-slate-900">The 17 Goals to Transform Our World</h3>
+                <a href="https://sdgs.un.org/goals" target="_blank" class="text-xs text-emerald-600 hover:underline mb-1">Official UN Website &rarr;</a>
+            </div>
+
+            <div class="mb-12 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <div class="video-container mb-4" id="video-box">
+                    <div class="video-placeholder relative w-full aspect-video rounded-xl cursor-pointer overflow-hidden group" 
+                         id="video-placeholder" 
+                         style="background-image: url('https://img.youtube.com/vi/0XTBYMfZyrM/maxresdefault.jpg'); background-size: cover; background-position: center;">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                            <div class="w-16 h-16 flex items-center justify-center rounded-full bg-white/90 text-slate-800 shadow-lg transform group-hover:scale-110 transition-transform duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 ml-1">
+                                    <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="px-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-1">Introduction to the SDGs</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed italic">
+                            Learn about the "world's best plan" for a better future. This UN video outlines the 17 goals designed to transform our world by 2030.
+                        </p>
+                    </div>
+                    <a href="https://www.youtube.com/watch?v=0XTBYMfZyrM" target="_blank" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 hover:bg-slate-100 transition-colors uppercase tracking-wider shrink-0">
+                        Watch on YouTube ↗
+                    </a>
+                </div>
+            </div> 
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="goals-grid">
+                </div>
+        </div>
+    </div> </section>
+
+
+
+<!-- Page 2: About Us -->
+        <section id="page-about" class="page-section hidden">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold text-slate-900">Our Collaborative Team</h2>
+                <p class="mt-2 text-slate-500">Four perspectives, one vision for a sustainable future.</p>
+            </div>
+
+            <!-- 【核心修改点】这里将 lg:grid-cols-4 改成了 lg:grid-cols-2，让大屏下也保持一排两个 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                <!-- Member 1 -->
+                <div class="group">
+                    <!-- Image Container: 照片居中 (已放大至原来的1.5倍) -->
+                    <div class="relative aspect-square w-72 mx-auto rounded-2xl mb-6 group-hover:border-emerald-500 transition-colors duration-300 ring-1 ring-slate-100 ring-offset-2 overflow-hidden shadow-sm">
+                        <img src="member1.jpg" alt="Zhou Tiantian" class="w-full h-full object-cover">
+                    </div>
+                    <!-- English Name: 文字居中 -->
+                    <h3 class="font-bold text-2xl text-center text-slate-900 group-hover:text-emerald-700 transition-colors">Zhou Tiantian</h3>
+                    <!-- Chinese Name: 文字居中 -->
+                    <p class="text-center text-emerald-600 font-medium text-base mt-1 mb-5">周添添</p>
+                    <!-- Description Container: 核心修改！加入两端对齐与自动连字符断词 -->
+                    <div class="space-y-3 text-base text-slate-700 text-justify hyphens-auto" lang="en">
+                        <p><strong class="font-semibold text-slate-900">Background:</strong> Studying at Liaoning University and Victoria University, majoring in international business.</p>
+                        <p><strong class="font-semibold text-slate-900">Aspiration:</strong> I aim to work in international urban economic investment, participate in overseas urban construction business, and promote sustainable commercial development of overseas communities.</p>
+                    </div>
+                </div>
+                
+                <!-- Member 2 -->
+                <div class="group">
+                    <!-- Image Container -->
+                    <div class="relative aspect-square w-72 mx-auto rounded-2xl mb-6 group-hover:border-emerald-500 transition-colors duration-300 ring-1 ring-slate-100 ring-offset-2 overflow-hidden shadow-sm">
+                        <img src="member2.jpg" alt="Wu Yutong" class="w-full h-full object-cover">
+                    </div>
+                    <!-- English Name -->
+                    <h3 class="font-bold text-2xl text-center text-slate-900 group-hover:text-emerald-700 transition-colors">Wu Yutong</h3>
+                    <!-- Chinese Name -->
+                    <p class="text-center text-emerald-600 font-medium text-base mt-1 mb-5">吴雨桐</p>
+                    <!-- Description Container: 核心修改！加入两端对齐与自动连字符断词 -->
+                    <div class="space-y-3 text-base text-slate-700 text-justify hyphens-auto" lang="en">
+                        <p><strong class="font-semibold text-slate-900">Background:</strong> I study international business as my main subject across Liaoning University and Victoria University.</p>
+                        <p><strong class="font-semibold text-slate-900">Aspiration:</strong> I plan to develop in the field of international green trade, promote global low-carbon business exchanges, and help enterprises carry out climate-friendly overseas trade business.</p>
+                    </div>
+                </div>
+                
+                <!-- Member 3 -->
+                <div class="group">
+                    <!-- Image Container -->
+                    <div class="relative aspect-square w-72 mx-auto rounded-2xl mb-6 group-hover:border-emerald-500 transition-colors duration-300 ring-1 ring-slate-100 ring-offset-2 overflow-hidden shadow-sm">
+                        <img src="member3.jpg" alt="Wu Shuaiqi" class="w-full h-full object-cover">
+                    </div>
+                    <!-- English Name -->
+                    <h3 class="font-bold text-2xl text-center text-slate-900 group-hover:text-emerald-700 transition-colors">Wu Shuaiqi</h3>
+                    <!-- Chinese Name -->
+                    <p class="text-center text-emerald-600 font-medium text-base mt-1 mb-5">吴帅琪</p>
+                    <!-- Description Container: 核心修改！加入两端对齐与自动连字符断词 -->
+                    <div class="space-y-3 text-base text-slate-700 text-justify hyphens-auto" lang="en">
+                        <p><strong class="font-semibold text-slate-900">Background:</strong> I am currently pursuing my international business degree at both Liaoning University and Victoria University.</p>
+                        <p><strong class="font-semibold text-slate-900">Aspiration:</strong> I hope to engage in international energy business cooperation in the future, promote cross-border trade of clean energy products, and boost green energy economic development worldwide.</p>
+                    </div>
+                </div>
+                
+                <!-- Member 4 -->
+                <div class="group">
+                    <!-- Image Container -->
+                    <div class="relative aspect-square w-72 mx-auto rounded-2xl mb-6 group-hover:border-emerald-500 transition-colors duration-300 ring-1 ring-slate-100 ring-offset-2 overflow-hidden shadow-sm">
+                        <img src="member4.jpg" alt="Wang Kexian" class="w-full h-full object-cover">
+                    </div>
+                    <!-- English Name -->
+                    <h3 class="font-bold text-2xl text-center text-slate-900 group-hover:text-emerald-700 transition-colors">Wang Kexian</h3>
+                    <!-- Chinese Name -->
+                    <p class="text-center text-emerald-600 font-medium text-base mt-1 mb-5">王轲娴</p>
+                    <!-- Description Container: 核心修改！加入两端对齐与自动连字符断词 -->
+                    <div class="space-y-3 text-base text-slate-700 text-justify hyphens-auto" lang="en">
+                        <p><strong class="font-semibold text-slate-900">Background:</strong> My academic major is international business, and I study jointly at Liaoning University and Victoria University.</p>
+                        <p><strong class="font-semibold text-slate-900">Aspiration:</strong> I want to be engaged in cross-border marine economic trade, standardize international fishery business, and realize eco-friendly marine commercial development.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 3: SDG 17 Goals (National Research) -->
+        <section id="page-goals" class="page-section hidden">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">National Impact Research</h2>
+                    <p class="text-slate-500 mt-1">Individual reports on goal adversity and rectification strategies.</p>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-lg">
+                    <button onclick="showTab('research', 0)" class="research-tab px-4 py-2 text-xs font-bold rounded-md bg-white shadow-sm text-emerald-600">SDG 11</button>
+                    <button onclick="showTab('research', 1)" class="research-tab px-4 py-2 text-xs font-bold rounded-md text-slate-500 hover:text-slate-700">SDG 14</button>
+                    <button onclick="showTab('research', 2)" class="research-tab px-4 py-2 text-xs font-bold rounded-md text-slate-500 hover:text-slate-700">SDG 13</button>
+                    <button onclick="showTab('research', 3)" class="research-tab px-4 py-2 text-xs font-bold rounded-md text-slate-500 hover:text-slate-700">SDG 7</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 min-h-[400px]">
+                <!-- MEMBER A: SDG 11 (Sustainable Cities and Communities) -->
+                <div id="research-tab-0" class="tab-content active max-w-6xl mx-auto space-y-10 p-4">
+
+            <div class="bg-white border border-zinc-200 shadow-xl overflow-hidden flex flex-col font-sans max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 border-b border-zinc-200">
+                    <div class="relative p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-zinc-200 min-h-[280px]">
+                        <img src="sdg11-.png" alt="Selected Goal Background" class="absolute inset-0 w-full h-full object-cover z-0">
+                        <div class="absolute inset-0 bg-black/25 z-10"></div>
+                        <div class="absolute inset-6 border border-white/10 pointer-events-none hidden sm:block z-20"></div>
+                        <div class="relative z-20">
+                            <span class="text-[11px] tracking-widest text-white uppercase font-black bg-amber-600 px-2.5 py-1 rounded shadow-sm inline-block mb-4">Selected Goal</span>
+                            <h4 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wide leading-tight">SDG 11: Sustainable Cities & Communities</h4>
+                        </div>
+                    </div>
+                    <div class="p-8 md:p-12 bg-zinc-900 text-white flex flex-col justify-center relative">
+                        <h5 class="text-xl md:text-2xl font-black tracking-widest uppercase mb-4 leading-snug text-white">The Purpose <br class="hidden md:block"/>of SDG 11</h5>
+                        <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Sustainable Development Goal 11 aims to make cities and human settlements inclusive, safe, resilient and sustainable. It directly focuses on disaster risk reduction, sustainable transport, and creating safe human settlements.</p>
+                    </div>
+                </div>
+                <div class="p-12 md:p-16 bg-zinc-800 text-white w-full text-center flex flex-col items-center justify-center border-b border-zinc-200">
+                    <div class="max-w-3xl">
+                        <span class="text-xs tracking-widest text-amber-400 uppercase font-bold block mb-2">Target Country</span>
+                        <h4 class="text-5xl md:text-6xl font-black tracking-widest text-white uppercase mb-6">Kenya</h4>
+                        <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-normal max-w-xl mx-auto">Currently facing critical unsustainable urban development challenges, characterized by rapid demographic growth and infrastructure lag.</p>
+                    </div>
+                </div>
+                <div class="relative w-full min-h-[350px] md:min-h-[450px] flex items-center justify-center">
+                    <img src="肯尼亚.jpg" alt="Kenya Document Image" class="absolute inset-0 w-full h-full object-cover z-0">
+                    <div class="absolute inset-0 bg-black/10 z-10"></div> 
+                    <div class="absolute inset-6 border border-white/20 pointer-events-none hidden sm:block z-20"></div>
+                    <div class="relative z-20 text-center px-4"></div>
+                </div>
+            </div> 
+
+            <div class="bg-white border border-slate-200 shadow-xl rounded-xl pt-10 pb-10 px-8 space-y-6">
+    <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+        <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+        <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Adverse Impact Analysis</h5>
+    </div>
+    
+    <!-- 核心修改：将 lg:grid-cols-5 改为了 lg:grid-cols-2，实现 50/50 的对等布局 -->
+    <div class="grid lg:grid-cols-2 gap-8 items-center">
+        
+        <!-- 左侧文字部分：移除了原来的 lg:col-span-3，让其自然占据一半空间 -->
+        <div class="space-y-5">
+            <p class="text-sm text-slate-600 leading-relaxed font-normal text-justify hyphens-auto" lang="en">Kenya suffers from serious unsustainable urban development problems. In major cities, large-scale slums are constantly expanding, trapped in overcrowding, dilapidated housing, and highly insufficient living space. This phenomenon of informal slum settlements has become extremely common across urban areas.</p>
+            <div class="bg-red-50/60 border border-red-100 rounded-xl p-5 flex items-center gap-5">
+                <div class="text-4xl font-black text-red-600 tracking-tight">60%+</div>
+                <div class="text-xs text-slate-600 leading-relaxed font-normal">of the urban residents live in poor and informal communities, where excessive population density, poor housing, and lack of basic services are widespread. <span class="text-[10px] text-slate-400 block mt-1">(Source: KNBS, 2019, p.45)</span></div>
+            </div>
+            <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 flex justify-between items-center text-xs text-slate-600">
+                <span class="font-normal">The public transportation system is lagging behind, leading to widespread and severe traffic congestion.</span>
+                <span class="bg-amber-600 text-white font-black px-2.5 py-1 rounded text-[10px] uppercase whitespace-nowrap tracking-wider">Traffic Lag</span>
+            </div>
+        </div>
+
+        <!-- 右侧图片部分：移除了 lg:col-span-2，并将 p-4 稍微缩减为 p-3，最大化图片显示区域 -->
+        <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between h-full">
+            <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Statistical Reference</span>
+                <h6 class="text-xs font-bold text-slate-700 mb-4">Figure 1: Levels & Rates of Urbanisation (1948-2035)</h6>
+                <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <!-- 图片现在会占据更大的容器空间 -->
+                    <img src="urbanisation_chart.png" alt="Urbanisation Chart" class="w-full h-auto object-contain">
+                </div>
+            </div>
+            <p class="text-[9px] text-slate-400 italic mt-3 text-right">Source: 2019 KPHC Analytical Report Vol. IX; World Cities Report, 2022</p>
+        </div>
+        
+    </div>
+</div>
+
+            <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+    <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+        <span class="w-2.5 h-2.5 bg-slate-400 rounded-full"></span>
+        <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Root Causes</h5>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+        
+        <!-- 卡片 1 -->
+        <!-- 添加了 relative 和 overflow-hidden 以容纳绝对定位的图片层 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            
+            <!-- 隐藏的复选框，用于控制图文切换状态 -->
+            <input type="checkbox" id="toggle-1" class="peer hidden">
+            
+            <!-- 右上角切换按钮 (带有循环箭头) -->
+            <!-- 使用 peer-checked 控制点击后图标的旋转和颜色变化 -->
+            <label for="toggle-1" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <!-- 循环刷新图标 -->
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <!-- 文字内容层 (点击后将淡出并隐藏) -->
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-3 font-bold group-hover:text-amber-700 transition">01. Rural-to-Urban Migration</strong>
+                    Limited rural employment opportunities have led to a massive migration of people to Kenya's cities. The large influx of migrants puts pressure on urban systems, while local authorities, with limited funding and planning capacity, struggle to cope with population growth.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— UNDP, 2023</span>
+            </div>
+
+            <!-- 图片内容层 (默认隐藏，点击后淡入显示) -->
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="cause1.jpg" alt="Migration" class="w-full h-full object-cover">
+                <!-- 图片顶部的半透明渐变遮罩，确保右上角按钮在任何图片背景下都清晰可见 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 2 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-2" class="peer hidden">
+            
+            <label for="toggle-2" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-3 font-bold group-hover:text-amber-700 transition">02. Velocity Imbalance</strong>
+                    The growth of urban population far outpaces the development speed of housing, infrastructure and public services. Regional economic inequality has driven more low-income groups to flock to cities, resulting in a severe imbalance between supply and demand.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— NCPD, 2025</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="cause2.jpg" alt="Velocity Imbalance" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 3 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-3" class="peer hidden">
+            
+            <label for="toggle-3" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-3 font-bold group-hover:text-amber-700 transition">03. Capacity & Regulation Deficit</strong>
+                    Urban planning and land management have failed to keep pace with the rapid population growth. Inadequate supervision has led to the emergence of numerous disorderly residential areas and the uncontrolled expansion of informal housing.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— UNDP, 2023</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="cause3.jpg" alt="Capacity Deficit" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 4 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-4" class="peer hidden">
+            
+            <label for="toggle-4" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-3 font-bold group-hover:text-amber-700 transition">04. Disorderly Layout</strong>
+                    The lack of unified planning in urban layout has led to the disorderly presence of illegal buildings; insufficient investment in infrastructure fails to meet the needs of residents, resulting in slums, chaotic traffic and poor urban living conditions.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— UNDP, 2023</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="cause4.jpg" alt="Disorderly Layout" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+            <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+                    <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Improvement Measures & Strategy</h5>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure A</span>
+                            <h6 class="text-sm font-bold text-slate-900 mb-1.5">Scientific Planning & In-situ Upgrades</h6>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">Formulate a scientific and unified overall urban planning to renovate chaotic slums and build affordable, compliant housing. Emphasize <span class="text-amber-700 font-bold underline decoration-amber-400">no forced demolition</span>; existing structures will be preserved while focusing on low-cost essential upgrades to surrounding infrastructure.</p>
+                        </div>
+                        <span class="text-[9px] text-slate-400 text-right mt-4 block font-mono">— World Bank, 2016</span>
+                    </div>
+                    <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure B</span>
+                            <h6 class="text-sm font-bold text-slate-900 mb-1.5">Diversified External Funding</h6>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">To counter local funding shortages, avoid relying solely on government finance. Actively absorb international public welfare funds, overseas development assistance (ODA), and foreign capital to expand the public transport network and relieve traffic pressure.</p>
+                        </div>
+                        <span class="text-[9px] text-slate-400 text-right mt-4 block font-mono">— UN-Habitat, 2018</span>
+                    </div>
+                    <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                        <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure C</span>
+                        <h6 class="text-sm font-bold text-slate-900 mb-1.5">Environmental Management & Resilience</h6>
+                        <p class="text-xs text-slate-600 leading-relaxed font-normal">Establish a standardized system for waste classification and disposal to strengthen environmental hygiene and maintain cleanliness. Concurrently, upgrade urban disaster prevention and emergency infrastructure to enhance the city's coping capacity against natural disasters.</p>
+                    </div>
+                    <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                        <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure D</span>
+                        <h6 class="text-sm font-bold text-slate-900 mb-1.5">Coordinated Rural-Urban Development</h6>
+                        <p class="text-xs text-slate-600 leading-relaxed font-normal">Coordinate urban-rural development patterns to alleviate the current stress of excessive populations flocking to big cities. Actively promote balanced economic growth and infrastructure construction in small towns.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-4">
+                <div>
+                    <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest">Field Photography: Kenyan Urban Textures</h5>
+                    <p class="text-xs text-slate-400 mt-0.5 font-normal">Visual documentation of local human settlements and infrastructure constraints.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                        <img src="path_to_image_1.jpg" alt="Kenyan residents on motorbike" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                        <img src="path_to_image_2.jpg" alt="Local woman carrying container in alleyway" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                        <img src="path_to_image_3.jpg" alt="Local child sitting by a doorway" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                        <img src="path_to_image_4.jpg" alt="Densely wired and narrow street view" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+                
+                <!-- MEMBER B: SDG 14 Life Below Water -->
+                <div id="research-tab-1" class="tab-content hidden max-w-6xl mx-auto space-y-10 p-4">
+
+    <div class="bg-white border border-zinc-200 shadow-xl overflow-hidden flex flex-col font-sans max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 border-b border-zinc-200">
+            <div class="relative p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-zinc-200 min-h-[280px] bg-sky-900">
+                <img src="sdg14-.jpg" alt="Selected Goal Background" class="absolute inset-0 w-full h-full object-cover z-0">
+				<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-cyan-900/40 z-20"></div>
+                <div class="absolute inset-6 border border-white/10 pointer-events-none hidden sm:block z-20"></div>
+                <div class="relative z-20">
+                    <span class="text-[11px] tracking-widest text-white uppercase font-black bg-cyan-600 px-2.5 py-1 rounded shadow-sm inline-block mb-4">Selected Goal</span>
+                    <h4 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wide leading-tight">SDG 14: Life Below Water</h4>
+                </div>
+            </div>
+            <div class="p-8 md:p-12 bg-zinc-900 text-white flex flex-col justify-center relative">
+                <h5 class="text-xl md:text-2xl font-black tracking-widest uppercase mb-4 leading-snug text-cyan-400">The Purpose <br class="hidden md:block"/>of SDG 14</h5>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Sustainable Development Goal 14 aims to conserve and sustainably use the oceans, seas, and marine resources for sustainable development.</p>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed font-light mt-2">Moreover, it directly addresses marine pollution, overfishing, ocean acidification, protection of marine and coastal ecosystems, and support for small-scale fishers.</p>
+            </div>
+        </div>
+        <div class="p-12 md:p-16 bg-zinc-800 text-white w-full text-center flex flex-col items-center justify-center border-b border-zinc-200">
+            <div class="max-w-3xl">
+                <span class="text-xs tracking-widest text-cyan-400 uppercase font-bold block mb-2">Target Country</span>
+                <h4 class="text-5xl md:text-6xl font-black tracking-widest text-white uppercase mb-6">The Philippines</h4>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-normal max-w-xl mx-auto">Home to one of the world’s largest coral reef systems (approximately 27,000 km²), currently facing severe marine degradation and critical ecological pressure.</p>
+            </div>
+        </div>
+        <div class="relative w-full min-h-[350px] md:min-h-[450px] flex items-center justify-center">
+            <img src="https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1200&q=80" alt="Philippine Underwater Coral Reef" class="absolute inset-0 w-full h-full object-cover z-0">
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/40 via-transparent to-black/25 z-10"></div> 
+            <div class="absolute inset-6 border border-white/20 pointer-events-none hidden sm:block z-20"></div>
+            <div class="relative z-20 text-center px-4"></div>
+        </div>
+    </div> 
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Adverse Impact Analysis</h5>
+        </div>
+        
+        <!-- 核心修改：将 lg:grid-cols-5 改为 lg:grid-cols-2，实现对等分栏 -->
+        <div class="grid lg:grid-cols-2 gap-8 items-center">
+            
+            <!-- 左侧文字部分：移除原有的 lg:col-span-3 -->
+            <div class="space-y-5">
+                <p class="text-sm text-slate-600 leading-relaxed font-normal text-justify hyphens-auto" lang="en">The Philippines suffers from critical threats to its coastal and marine environment. Coral reefs across the archipelago have experienced significant decline, leaving many surveyed areas in poor to fair condition. Overfishing, destructive fishing practices, and coastal habitat loss further jeopardize marine biodiversity and the livelihoods of millions dependent on fisheries and tourism.</p>
+                
+                <div class="bg-red-50/60 border border-red-100 rounded-xl p-5 flex items-center gap-5">
+                    <div class="text-3xl font-black text-red-600 tracking-tight whitespace-nowrap">356,371 MT</div>
+                    <div class="text-xs text-slate-600 leading-relaxed font-normal">of ocean plastic pollution emitted annually. The country currently ranks as the <strong>world’s top contributor</strong> to land-based plastic waste entering marine ecosystems.</div>
+                </div>
+                
+                <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 flex justify-between items-center text-xs text-slate-600">
+                    <span class="font-normal">Destructive fishing practices and habitat loss are driving an urgent biodiversity crisis across major fishing grounds.</span>
+                    <span class="bg-cyan-700 text-white font-black px-2.5 py-1 rounded text-[10px] uppercase whitespace-nowrap tracking-wider">Biodiversity Threat</span>
+                </div>
+            </div>
+            
+            <!-- 右侧图片部分：移除 lg:col-span-2，并将 p-4 微调为 p-3 以释放更多图片空间 -->
+            <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between h-full">
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Statistical Reference</span>
+                    <h6 class="text-xs font-bold text-slate-700 mb-4">Figure 1: Trends in Live Coral Cover in the Philippines (1980-2030 Projection)</h6>
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <!-- 图片现在会自适应变得更大、更清晰 -->
+                        <img src="coral_chart.png" alt="Trends in Live Coral Cover" class="w-full h-auto object-contain">
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400 italic mt-3 text-right">Source: Global Coral Reef Monitoring Network (GCRMN), 2020</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+    <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+        <span class="w-2.5 h-2.5 bg-slate-400 rounded-full"></span>
+        <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Root Causes</h5>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+        
+        <!-- 卡片 1 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-cyan-500/40 transition duration-300 group">
+            
+            <!-- 隐藏的复选框，控制切换状态 -->
+            <input type="checkbox" id="toggle-ocean-1" class="peer hidden">
+            
+            <!-- 右上角切换按钮 (主题色改为Cyan) -->
+            <label for="toggle-ocean-1" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-cyan-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <!-- 文字内容层 -->
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-cyan-700 transition">01. Infrastructure Pressures</strong>
+                    Rapid population growth, intense urbanization, and severely lagging waste management infrastructure have led to massive land-based plastic pollution entering rivers and oceans, especially during peak typhoon seasons.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— Oruc Baci et al., 2026</span>
+            </div>
+
+            <!-- 图片内容层 -->
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你的图片路径 -->
+                <img src="ocean_cause1.jpg" alt="Infrastructure Pressures" class="w-full h-full object-cover">
+                <!-- 顶部半透明遮罩，保证按钮文字清晰 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 2 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-cyan-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-ocean-2" class="peer hidden">
+            
+            <label for="toggle-ocean-2" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-cyan-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-cyan-700 transition">02. Poverty Causes Destruction</strong>
+                    Widespread coastal poverty paired with a high commercial demand for seafood drives overfishing and illegal practices like blast and cyanide fishing, which instantly shatter live coral structures.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— GCRMN, 2020</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="ocean_cause2.jpg" alt="Destructive Fishing" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 3 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-cyan-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-ocean-3" class="peer hidden">
+            
+            <label for="toggle-ocean-3" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-cyan-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-cyan-700 transition">03. Anthropogenic Climate Stressors</strong>
+                    Global climate change-induced sea temperature spikes and worsening ocean acidification trigger widespread, repeated coral bleaching events, heavily diminishing regional live coral cover.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— GCRMN, 2020</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="ocean_cause3.jpg" alt="Climate Stressors" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 4 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-cyan-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-ocean-4" class="peer hidden">
+            
+            <label for="toggle-ocean-4" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-cyan-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-cyan-700 transition">04. Governance & Regulation Deficit</strong>
+                    Weak enforcement of environmental laws, insufficient urban municipal planning, and destructive land-based activities (agricultural runoff, mining, and chaotic coastal development) result in extensive sedimentation and eutrophication.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— Dagum et al., 2024</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="ocean_cause4.jpg" alt="Regulation Deficit" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Improvement Measures & Strategy</h5>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-cyan-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure A</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">Waste Management Upgrades</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">Strengthen national and local waste management systems by implementing strict <span class="text-cyan-700 font-bold underline decoration-cyan-400">“zero-sachet” policies</span>, expanding community-based recycling initiatives, and investing heavily in modern waste treatment facilities within urban river catchments. A synchronized combination of infrastructure and behavioral change is essential.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-cyan-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure B</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">Fisheries Enforcement & MPAs</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">Enhance enforcement of the regional Fisheries Code and scale up well-managed Marine Protected Areas (MPAs). Deploy advanced satellite monitoring and localized community patrols to systematically eliminate illegal, unreported, and unregulated (IUU) fishing. Mobilize international development assistance and blue bonds to fund operations.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-cyan-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure C</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">Ecosystem Restoration & Resilient Strains</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">Launch large-scale coral reef restoration projects utilizing dedicated ocean nurseries and climate-resilient coral strains. Concurrently restore surrounding mangrove forests and seagrass beds to construct natural, high-resilience coastal protection barriers.</p>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-cyan-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure D</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">Alternative Livelihoods & Stewardship</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">Promote sustainable alternative livelihoods such as coastal ecotourism, seaweed farming, and certified sustainable fisheries to relieve wild stocks. Integrate ocean education into school curricula, strengthen inter-agency coordination, and foster public-private-civil society partnerships to secure long-term marine stewardship.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-4">
+        <div>
+            <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest">Field Photography: Philippine Marine Context</h5>
+            <p class="text-xs text-slate-400 mt-0.5 font-normal">Visual documentation of beach cleanups, land-based plastic waste, and coral eco-structures.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="photo1.png" alt="Beach Cleanup" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="photo2.png" alt="Plastic Waste on Streets" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="photo3.png" alt="Philippine Undersea Coral" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+                <!-- MEMBER C: SDG 13 (Climate Action) -->
+                <div id="research-tab-2" class="tab-content hidden max-w-6xl mx-auto space-y-10 p-4">
+
+    <div class="bg-white border border-zinc-200 shadow-xl overflow-hidden flex flex-col font-sans max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 border-b border-zinc-200">
+            <div class="relative p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-zinc-200 min-h-[280px] bg-emerald-950">
+                <img src="sdg13-.jpg" alt="Selected Goal Background" class="absolute inset-0 w-full h-full object-cover z-0">
+				<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-teal-900/40 to-emerald-900/40 z-20"></div>
+                <div class="absolute inset-6 border border-white/10 pointer-events-none hidden sm:block z-20"></div>
+                <div class="relative z-30">
+                    <span class="text-[11px] tracking-widest text-white uppercase font-black bg-teal-600 px-2.5 py-1 rounded shadow-sm inline-block mb-4">Selected Goal</span>
+                    <h4 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wide leading-tight">SDG 13: Climate Action</h4>
+                </div>
+            </div>
+            <div class="p-8 md:p-12 bg-zinc-900 text-white flex flex-col justify-center relative">
+                <h5 class="text-xl md:text-2xl font-black tracking-widest uppercase mb-4 leading-snug text-teal-400">The Purpose <br class="hidden md:block"/>of SDG 13</h5>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Sustainable Development Goal 13 demands urgent, synchronized global action to combat climate change and its far-reaching ecological and socioeconomic impacts.</p>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed font-light mt-2">It strictly focuses on strengthening adaptive capacity, integrating climate measures into national policy, and improving education and institutional awareness.</p>
+            </div>
+        </div>
+        <div class="p-12 md:p-16 bg-zinc-800 text-white w-full text-center flex flex-col items-center justify-center border-b border-zinc-200">
+            <div class="max-w-3xl">
+                <span class="text-xs tracking-widest text-teal-400 uppercase font-bold block mb-2">Target Country</span>
+                <h4 class="text-5xl md:text-6xl font-black tracking-widest text-white uppercase mb-6">Tuvalu</h4>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-normal max-w-xl mx-auto">A low-lying Pacific reef atoll nation structurally highly vulnerable to rapid sea-level rise, ocean warming, and violent weather anomalies.</p>
+            </div>
+        </div>
+        <div class="relative w-full min-h-[350px] md:min-h-[450px] flex items-center justify-center">
+            <img src="tuvalu-climate.jpg" alt="Tuvalu Climate Action Background" class="absolute inset-0 w-full h-full object-cover z-10">
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/50 via-transparent to-black/30 z-20"></div> 
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] z-20"></div>
+            <div class="absolute inset-6 border border-white/20 pointer-events-none hidden sm:block z-30"></div>
+            <div class="relative z-30 text-center px-4"></div>
+        </div>
+    </div> 
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl pt-10 pb-10 px-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Adverse Impact Analysis</h5>
+        </div>
+        
+        <!-- 核心修改：升级为 lg:grid-cols-2，保持左字右图的 50/50 完美对等分栏 -->
+        <div class="grid lg:grid-cols-2 gap-8 items-center">
+            
+            <!-- 【左侧】文字描述与数据卡片 -->
+            <div class="space-y-5">
+                <!-- 文字部分：加入两端对齐与自动连字符断词换行 -->
+                <p class="text-sm text-slate-600 leading-relaxed font-normal text-justify hyphens-auto" lang="en">Tuvalu faces catastrophic existential threats driven by global anthropogenic emissions. The compounding effects of rising sea levels, high-velocity tropical cyclones, and extensive king tides have led to accelerated shoreline erosion and systemic saltwater intrusion into arable lands. This process rapidly contaminates critical underground freshwater lenses and shatters local subsistence agriculture.</p>
+                
+                <!-- 数据卡片：采用微调后的悬挂字样式，防止字间距挤压 -->
+                <div class="bg-red-50/60 border border-red-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                    <div class="text-xl font-black text-red-600 tracking-tight shrink-0">5 mm/yr</div>
+                    <div class="text-[11px] text-slate-600 leading-tight font-normal shrink-1">of localized sea-level rise—significantly higher than the global average—directly triggering severe land loss and forced demographic displacement risks.</div>
+                </div>
+                
+                <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 flex justify-between items-center text-xs text-slate-600">
+                    <span class="font-normal">Widespread marine inundation and acute soil salinization are crippling food security and forcing urban overcrowding.</span>
+                    <span class="bg-teal-700 text-white font-black px-2.5 py-1 rounded text-[10px] uppercase whitespace-nowrap tracking-wider">Inundation Lag</span>
+                </div>
+            </div>
+
+            <!-- 【右侧】完整保留的图片及参考资料卡片，图片尺寸已自适应放大 -->
+            <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between h-full">
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Statistical Reference</span>
+                    <h6 class="text-xs font-bold text-slate-700 mb-4">Figure 1: Observed Sea-Level Rise at Funafuti, Tuvalu (1992–2020)</h6>
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <!-- 图片将在这里以更宽敞、更放大的尺寸清晰显示 -->
+                        <img src="sealevel_chart.jpg" alt="Sea-Level Rise Chart" class="w-full h-auto object-contain">
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400 italic mt-3 text-right">Source: University of Colorado CCAR Altimetry Project; UHSLC Tide Gauge Data, 2020; SPREP (2024)</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+    <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+        <span class="w-2.5 h-2.5 bg-slate-400 rounded-full"></span>
+        <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Root Causes</h5>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+        
+        <!-- 卡片 1 -->
+        <!-- 添加 relative 和 overflow-hidden，增大内边距为 p-8，强制最小高度 min-h-64 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-teal-500/40 transition duration-300 group">
+            
+            <!-- 隐藏的复选框，用于控制状态 -->
+            <input type="checkbox" id="toggle-tuvalu-1" class="peer hidden">
+            
+            <!-- 右上角切换按钮 (主题色匹配 teal) -->
+            <label for="toggle-tuvalu-1" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-teal-50 text-slate-500 hover:text-teal-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-teal-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <!-- 文字内容层 (字号已整体放大) -->
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-teal-700 transition">01. Global Carbon Emission</strong>
+                    Unchecked industrial greenhouse gas emissions from major global economies accelerate global warming and thermal expansion of small island oceans, forcing localized sea levels upward.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— IPCC, 2021</span>
+            </div>
+
+            <!-- 图片内容层 -->
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="tuvalu_cause1.jpg" alt="Carbon Emissions" class="w-full h-full object-cover">
+                <!-- 图片顶部的半透明渐变遮罩，确保右上角按钮始终清晰 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 2 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-teal-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-tuvalu-2" class="peer hidden">
+            
+            <label for="toggle-tuvalu-2" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-teal-50 text-slate-500 hover:text-teal-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-teal-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-teal-700 transition">02. Topographical Vulnerability</strong>
+                    The average elevation of Tuvalu’s atolls is less than 2-3 meters above sea level. This extreme structural plateau offers no natural geological barriers against high swells or ocean surges.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— SPREP, 2024</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="tuvalu_cause2.jpg" alt="Topographical Vulnerability" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 3 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-teal-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-tuvalu-3" class="peer hidden">
+            
+            <label for="toggle-tuvalu-3" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-teal-50 text-slate-500 hover:text-teal-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-teal-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-teal-700 transition">03. Thermal Inertia & Coral Decay</strong>
+                    Elevated ocean temperature anomalies trigger extensive marine bleaching, which systematically degrades the surrounding protective coral reefs, removing the island's primary shield against ocean wave energy.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— NOAA, 2025</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="tuvalu_cause3.jpg" alt="Coral Decay" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 4 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-teal-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-tuvalu-4" class="peer hidden">
+            
+            <label for="toggle-tuvalu-4" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-teal-50 text-slate-500 hover:text-teal-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-teal-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-teal-700 transition">04. Local Adaptation & Capital Deficit</strong>
+                    The municipal planning sectors suffer from severe domestic funding constraints, a lack of unified global climate finance distribution, and insufficient technological support to execute mega-scale land reclamation.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— UNDP, 2023</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="tuvalu_cause4.jpg" alt="Capital Deficit" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Improvement Measures & Strategy</h5>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-teal-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure A</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">Coastal Reclamation & Hard Engineering</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">Formulate a standardized, long-term engineering blueprint to build elevated sea walls and expand coastal land reclamation using dredged sand. Emphasize <span class="text-teal-700 font-bold underline decoration-teal-400">nature-based defenses</span>; gray concrete structures must integrate with dense coastal vegetation to prevent sand erosion.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-teal-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure B</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">International Climate Sovereignty & Finance</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">To counter internal funding shortages, optimize international climate litigation and systematically absorb resources from the UN Green Climate Fund (GCF) and Overseas Development Assistance (ODA) to reinforce infrastructure resilience.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-teal-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure C</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">Freshwater Desalination & Biosafety</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">Establish localized, community-scale solar desalination networks to counter saltwater intrusion. Simultaneously expand advanced rainwater collection facilities and introduce salt-tolerant crop strains to stabilize agricultural health.</p>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-teal-700 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure D</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">Digital Nation Sovereignty & Contingency</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">Coordinate regional relocation protocols and pioneer digital administrative mirroring projects (e.g., storing cultural identity in cloud servers) to safeguard legal statehood sovereignty against severe sea-level risks.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-4">
+        <div>
+            <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest">Field Photography: Tuvalu Atoll Vulnerability</h5>
+            <p class="text-xs text-slate-400 mt-0.5 font-normal">Visual documentation of shoreline erosion, rising tides, and community resilience mechanisms.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="tuvalu_photo1.jpg" alt="Atoll coastal line" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="tuvalu_photo2.jpg" alt="Water inundation on runway" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="tuvalu_photo3.jpg" alt="Sea wall construction" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="tuvalu_photo4.png" alt="Local community resilience" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+                <!-- MEMBER D: SDG 7 (Affordable and Clean Energy) -->
+                <div id="research-tab-3" class="tab-content hidden max-w-6xl mx-auto space-y-10 p-4">
+
+    <div class="bg-white border border-zinc-200 shadow-xl overflow-hidden flex flex-col font-sans max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 border-b border-zinc-200">
+            <div class="relative p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-zinc-200 min-h-[280px] bg-amber-950">
+                <img src="sdg7-.jpg" alt="Selected Goal Background" class="absolute inset-0 w-full h-full object-cover z-0">
+				<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-900/40 to-yellow-900/30 z-20"></div>
+                <div class="absolute inset-6 border border-white/10 pointer-events-none hidden sm:block z-20"></div>
+                <div class="relative z-30">
+                    <span class="text-[11px] tracking-widest text-white uppercase font-black bg-amber-600 px-2.5 py-1 rounded shadow-sm inline-block mb-4">Selected Goal</span>
+                    <h4 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wide leading-tight">SDG 7: Affordable & Clean Energy</h4>
+                </div>
+            </div>
+            <div class="p-8 md:p-12 bg-zinc-900 text-white flex flex-col justify-center relative">
+                <h5 class="text-xl md:text-2xl font-black tracking-widest uppercase mb-4 leading-snug text-amber-400">The Purpose <br class="hidden md:block"/>of SDG 7</h5>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Sustainable Development Goal 7 aims to ensure access to affordable, reliable, sustainable, and modern energy for all.</p>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed font-light mt-2">For South Africa, this goal is not just about environmental protection, but a critical foundation for national economic survival and social equity.</p>
+            </div>
+        </div>
+        <div class="p-12 md:p-16 bg-zinc-800 text-white w-full text-center flex flex-col items-center justify-center border-b border-zinc-200">
+            <div class="max-w-3xl">
+                <span class="text-xs tracking-widest text-amber-400 uppercase font-bold block mb-2">Target Country</span>
+                <h4 class="text-5xl md:text-6xl font-black tracking-widest text-white uppercase mb-6">South Africa</h4>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed font-normal max-w-xl mx-auto">Currently facing an acute, structural electricity supply crisis, tipping the national grid between cascading blackouts and urgent system modernization.</p>
+            </div>
+        </div>
+        <div class="relative w-full min-h-[350px] md:min-h-[450px] flex items-center justify-center">
+            <img src="south_africa_energy.png" alt="South Africa Energy Landscape" class="absolute inset-0 w-full h-full object-cover z-10">
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/50 via-transparent to-black/30 z-20"></div> 
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] z-20"></div>
+            <div class="absolute inset-6 border border-white/20 pointer-events-none hidden sm:block z-30"></div>
+            <div class="relative z-30 text-center px-4"></div>
+        </div>
+    </div> 
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Adverse Impacts & Quantitative Analysis</h5>
+        </div>
+        
+        <!-- 核心修改：升级为 lg:grid-cols-2，完美保持左字右图的对等分栏 -->
+        <div class="grid lg:grid-cols-2 gap-8 items-center">
+            
+            <!-- 【左侧】文字描述与并排数据卡片 -->
+			<div class="space-y-5" lang="en">
+                <p class="text-sm text-slate-600 leading-relaxed font-normal text-justify hyphens-auto">South Africa's energy landscape has reached a critical tipping point. The nation's heavy reliance on an aging coal fleet has led to an exponential increase in destructive power outages, locally known as load shedding. These continuous blackouts have crippled the manufacturing and mining sectors, while frequent outages disrupt hospital operations and compromise public safety at night, disproportionately affecting vulnerable communities in informal settlements.</p>
+                
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <!-- 保持原有的 flex 左右并排布局，将 gap-4 缩减为 gap-3 节省空间 -->
+                    <div class="bg-red-50/60 border border-red-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                        <!-- 核心修改：将 text-2xl 调整为 text-xl，防止挤压右侧 -->
+                        <div class="text-xl font-black text-red-600 tracking-tight shrink-0">6,837 Hrs</div>
+                        <!-- 添加 shrink-1 允许文字更完美地自适应剩余宽度 -->
+                        <div class="text-[11px] text-slate-600 leading-tight font-normal shrink-1">Total duration of load shedding reached in 2023—nearly 78% of the entire year under power restrictions.</div>
+                    </div>
+                    
+                    <!-- 卡片 2 同理修改 -->
+                    <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                        <!-- 核心修改：将 text-2xl 调整为 text-xl -->
+                        <div class="text-xl font-black text-amber-600 tracking-tight shrink-0">190%+</div>
+                        <div class="text-[11px] text-slate-600 leading-tight font-normal shrink-1">Electricity tariff hike in the last decade, causing widespread energy poverty and failing affordability.</div>
+                    </div>
+                </div>
+                
+                <div class="bg-rose-50/40 border border-rose-100 rounded-xl p-4 flex justify-between items-center text-xs text-slate-600">
+                    <span class="font-normal">According to the South African Reserve Bank, ongoing load shedding shaves off up to 2 percentage points from national GDP growth annually.</span>
+                    <span class="bg-amber-600 text-white font-black px-2.5 py-1 rounded text-[10px] uppercase whitespace-nowrap tracking-wider">GDP Drag</span>
+                </div>
+            </div>
+            
+            <!-- 【右侧】完整保留的图片及参考资料卡片，图片尺寸已自适应放大 -->
+            <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between h-full">
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Statistical Reference</span>
+                    <h6 class="text-xs font-bold text-slate-700 mb-4">Figure 2: South Africa's Energy Fleet Performance & Generation Shares</h6>
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <!-- 图片宽度现在提升至 50% 容器宽，细节展示更清晰 -->
+                        <img src="energy_chart.jpg" alt="Energy Availability Factor and Grid Trends" class="w-full h-auto object-contain">
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400 italic mt-3 text-right">Source: CSIR Energy Centre & Stats SA (2025/2026)</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+    <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+        <span class="w-2.5 h-2.5 bg-slate-400 rounded-full"></span>
+        <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Root Causes</h5>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+        
+        <!-- 卡片 1 -->
+        <!-- 添加 relative 和 overflow-hidden，内边距增至 p-8，强制最小高度 min-h-64 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            
+            <!-- 隐藏的复选框，用于控制状态 -->
+            <input type="checkbox" id="toggle-sa-1" class="peer hidden">
+            
+            <!-- 右上角切换按钮 (主题色匹配 Amber) -->
+            <label for="toggle-sa-1" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <!-- 文字内容层 (字号已整体放大，占据更多空间) -->
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-amber-700 transition">01. Infrastructure Decay</strong>
+                    The Energy Availability Factor (EAF) of Eskom's coal fleet has plummeted from 70% in 2019 to below 55% in 2023, primarily driven by systemic lack of maintenance and embedded corruption.
+            </div>
+
+            <!-- 图片内容层 -->
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <!-- 【需修改】替换为你自己的图片路径 -->
+                <img src="sa_cause1.jpg" alt="Infrastructure Decay" class="w-full h-full object-cover">
+                <!-- 图片顶部的半透明渐变遮罩，确保右上角按钮在任何背景下都清晰可见 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 2 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-sa-2" class="peer hidden">
+            
+            <label for="toggle-sa-2" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-amber-700 transition">02. Market Monopoly Deficit</strong>
+                    For decades, a single state-owned utility monopoly (Eskom) controlled the power landscape, heavily discouraging private investment in renewables and creating a vulnerable single point of failure.
+                </p>
+                <span class="text-xs text-slate-400 text-right mt-6 block font-mono">— Eskom Market Review, 2025</span>
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="sa_cause2.jpg" alt="Market Monopoly" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 3 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-sa-3" class="peer hidden">
+            
+            <label for="toggle-sa-3" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-amber-700 transition">03. The Severe "Coal Trap"</strong>
+                    Despite global decarbonization pressures, South Africa's vast domestic coal reserves—which still account for roughly 80% of total generation—have created an intensely rigid path-dependency.
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="sa_cause3.jpg" alt="Coal Trap" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+        <!-- 卡片 4 -->
+        <div class="relative overflow-hidden p-8 min-h-64 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col justify-between hover:border-amber-500/40 transition duration-300 group">
+            <input type="checkbox" id="toggle-sa-4" class="peer hidden">
+            
+            <label for="toggle-sa-4" class="absolute top-4 right-4 z-20 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-full shadow-sm border border-slate-200 transition-all duration-300 peer-checked:[&_svg]:rotate-180 peer-checked:text-amber-600">
+                <span class="text-xs font-bold select-none">Switch</span>
+                <svg class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </label>
+
+            <div class="h-full flex flex-col justify-between relative z-10 transition-all duration-500 peer-checked:opacity-0 peer-checked:invisible">
+                <p class="text-base text-slate-600 leading-relaxed font-normal">
+                    <strong class="text-slate-900 text-xl block mb-4 font-bold group-hover:text-amber-700 transition">04. Political & Labor Complexity</strong>
+                    Transitioning rapidly away from the traditional fossil framework directly threatens thousands of essential mining jobs, making the execution of a "Just Energy Transition" highly complex.
+            </div>
+
+            <div class="absolute inset-0 z-0 transition-all duration-500 opacity-0 invisible peer-checked:opacity-100 peer-checked:visible bg-slate-100">
+                <img src="sa_cause4.jpg" alt="Political Complexity" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-150 pb-4">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+            <h5 class="text-base font-black text-slate-900 uppercase tracking-widest">Personal Response & Strategic Improvement Measures</h5>
+        </div>
+        <p class="text-xs text-slate-500 italic -mt-2">To move from "Adversity" to "Prosperity," South Africa must pivot from centralized coal to decentralized renewables:</p>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure A</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">Grid Modernization & Transmission Upgrades</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">The government must prioritize aggressively upgrading the physical transmission grid. Currently, many wind and solar projects in the clean energy-rich Northern Cape cannot connect to the national grid because the existing wires are operating at full capacity.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60 flex flex-col justify-between">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure B</span>
+                    <h6 class="text-sm font-bold text-slate-900 mb-1.5">Empowering the Private Sector & Feed-in Tariffs</h6>
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">Capitalizing on the trend where renewable share successfully rose to 16.2%, the state should continuously remove restrictive licensing caps for private generators, allowing commercial businesses to seamlessly sell excess solar power back to the grid via optimized Feed-in Tariffs.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure C</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">Targeted Social Subsidies (FBE Expansion)</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">To firmly guarantee that "No one is left behind," the Free Basic Electricity (FBE) quota must be systematically increased for registered indigent households to directly mitigate the severe socioeconomic impacts of rising utility tariffs.</p>
+            </div>
+            <div class="p-6 bg-emerald-50/30 rounded-xl border border-emerald-100/60">
+                <span class="inline-block px-2.5 py-0.5 bg-amber-600 text-white text-[10px] font-black rounded uppercase tracking-wider mb-3">Measure D</span>
+                <h6 class="text-sm font-bold text-slate-900 mb-1.5">The JET-IP Labor Retraining Framework</h6>
+                <p class="text-xs text-slate-600 leading-relaxed font-normal">South Africa must transparently and efficiently utilize the $8.5 billion Just Energy Transition Partnership (JETP) funds to systematically retrain legacy coal miners for technical jobs within the emerging wind and solar industries, ensuring a socially fair transition.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 shadow-xl rounded-xl p-8 space-y-4">
+        <div>
+            <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest">Field Photography: South African Energy Context</h5>
+            <p class="text-xs text-slate-400 mt-0.5 font-normal">Visual documentation of urban load shedding impacts, grid maintenance constraints, and the rapid deployment of rural and commercial solar structures.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="south_africa_blackout.jpg" alt="Urban Load Shedding Overview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="grid_maintenance.jpg" alt="Grid Line Maintenance Works" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="rural_solar_hut.jpg" alt="Rural Cottage Solar Module" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <div class="rounded-xl overflow-hidden h-40 shadow-md border border-slate-150 group bg-slate-100">
+                <img src="commercial_solar_roof.jpg" alt="Commercial Solar Installation" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- Page 4: SDG Act Now -->
+<section id="page-actnow" class="page-section hidden max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- 头部横幅区：通过重新分配左右比例，完美放大图片 -->
+<div class="mb-12">
+    <h2 class="text-3xl font-extrabold text-slate-950 tracking-tight">Act Now: Climate Action</h2>
+    <div class="mt-6 p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl flex flex-col md:flex-row gap-8 items-center shadow-xl">
+        
+        <!-- 左侧文字：调整为 flex-[1.2]，让出更多右侧空间 -->
+        <div class="flex-[1.2]">
+            <h3 class="text-xl font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                <span class="w-2 h-5 bg-emerald-400 rounded-full"></span>
+                Group Understanding: Carbon Footprint
+            </h3>
+            <p class="text-base text-slate-300 leading-relaxed">
+                The understanding of Carbon Footprint
+Carbon footprint refers to the total amount of carbon dioxide and other greenhouse gases emitted by humans, organizations or activities. It includes both direct emissions in daily life and indirect emissions during production, transportation and consumption processes. Carbon footprint is used to measure the extent to which human activities contribute to global warming.
+            </p>
+        </div>
+
+        <!-- 右侧图片容器：显著放宽到 420px，高度拉伸到 h-64，并去掉多余的内边距 p-2 放大图片 -->
+        <div class="w-full md:w-[420px] h-64 bg-slate-800/40 backdrop-blur rounded-xl flex items-center justify-center p-2 border border-slate-700/60 overflow-hidden shrink-0">
+            <!-- w-full h-full object-contain 确保图片撑满容器且不失真 -->
+            <img src="ten actions.png" alt="Ten Actions for Climate Crisis" class="w-full h-full object-contain hover:scale-105 transition-transform duration-300">
+        </div>
+
+    </div>
+</div>
+        
+  
+
+        <!-- 下侧：个人报告流（带 Tabs 切换按键） -->
+        <div class="w-full space-y-6">
+            
+            <!-- 标题与按键并排在一行 -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-1">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-slate-800 rounded-full"></span>
+                    Individual Action Reports
+                </h3>
+				
+
+                
+                <!-- 切换按键容器 -->
+                <div class="flex bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
+    <button onclick="showTab('actnow', 0)" class="research-tab px-4 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-emerald-600 transition-all duration-200">Member 1</button>
+    <button onclick="showTab('actnow', 1)" class="research-tab px-4 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all duration-200">Member 2</button>
+    <button onclick="showTab('actnow', 2)" class="research-tab px-4 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all duration-200">Member 3</button>
+    <button onclick="showTab('actnow', 3)" class="research-tab px-4 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all duration-200">Member 4</button>
+</div>
+            </div>
+            
+            <!-- ==================== 成员卡片展示区 ==================== -->
+
+            <!-- Member 1 Card (Wang Kexian) -->
+<div id="member-card-0" class="member-card bg-slate-50/50 p-8 rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500 w-full">
+    
+    <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h4 class="font-extrabold text-slate-900 text-2xl tracking-tight">Wang Kexian (王轲娴)</h4>
+                <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-200/50">Active Practitioner</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1.5 font-medium">Practicing low-carbon lifestyle · Committed to long-term ecological balance</p>
+            <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                <span>♻️</span> Core Action Framework: Reduce, Reuse, Repair, Recycle
+            </p>
+        </div>
+        <div class="flex items-center gap-4 bg-gradient-to-r from-emerald-50/60 to-teal-50/60 p-4 rounded-xl border border-emerald-100 min-w-[280px] justify-between shadow-inner">
+            <div class="text-left">
+                <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-widest block mb-1">Annual Footprint</span>
+                <div class="text-3xl font-black text-emerald-950 tracking-tight">13.28 <span class="text-xs font-bold text-emerald-700">t CO₂</span></div>
+            </div>
+            <div class="text-right border-l border-emerald-200/60 pl-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">China Average</span>
+                <div class="text-sm font-bold text-slate-600">30.18 t</div>
+                <span class="text-[9px] text-rose-600 font-bold bg-rose-50 px-1 py-0.5 rounded mt-1 inline-block">Above Average</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-emerald-950 text-emerald-100/90 p-5 rounded-2xl shadow-inner text-sm italic relative overflow-hidden mb-8 leading-relaxed">
+        <div class="absolute -right-2 -bottom-6 text-emerald-900/40 font-serif text-8xl pointer-events-none select-none">“</div>
+        <p class="relative z-10 font-medium">
+            “Although my current carbon footprint is relatively high, I will actively adopt a low-carbon lifestyle with my family, consciously practice the principles of ‘Reduce, Reuse, Repair, Recycle’, and strive to reduce carbon emissions in daily life. I am committed to gradually lowering my carbon footprint and contributing to environmental protection.”
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <span class="text-emerald-600">📊</span> UN Carbon Footprint Calculator Input Evidence & Analysis
+            </h5>
+            <span class="text-[10px] bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded-md border">Data Source: UN Calculator</span>
+        </div>
+
+        <div class="mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-emerald-300 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-emerald-700 font-extrabold text-base tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Aviation & Private Flights
+                </span>
+            </div>
+            <div class="w-full aspect-[21/9] md:aspect-[3/1] lg:aspect-[4/1] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs relative">
+                <img src="UN Calculator Aviation.jpg" alt="UN Calculator Aviation" class="w-full h-full object-cover group-hover:scale-[1.01] transition duration-500">
+            </div>
+            <p class="text-sm text-slate-600 font-semibold mt-2">Private Annual Flights Frequency Distribution</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-emerald-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    
+                    <span class="text-emerald-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Household Configuration
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="UN Calculator Household.jpg" alt="UN Calculator Household" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">4 persons / 100m² / Flat Base Input</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-emerald-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    
+                    <span class="text-emerald-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Transport & Mobility Logs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="UN Calculator Transport.jpg" alt="UN Calculator Transport" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Metro Transit / Walking Weekly Data Logs</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-emerald-300 transition-all duration-300">
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-lg overflow-hidden relative shadow-xs mb-3">
+                    <img src="household footprint.jpg" alt="Your annual household footprint chart summary" class="w-full h-full object-cover group-hover:scale-[1.01] transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Footprint Composition Analysis</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-emerald-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    
+                    <span class="text-emerald-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Lifestyle & Dietary Profiling
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="UN Calculator Lifestyle.jpg" alt="UN Calculator Lifestyle" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Meat Preferred Diet / Full Stream Waste Sorting</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="bg-white border border-slate-200/70 p-6 md:p-8 rounded-2xl shadow-xs hover:border-emerald-200 transition duration-300 mb-6">
+            <span class="bg-emerald-50 text-emerald-800 font-bold text-[10px] px-2.5 py-1 rounded-md uppercase tracking-wider">Theory Framework</span>
+            <h6 class="font-bold text-slate-900 text-base md:text-lg mt-4 mb-3">
+                The objective of “Reduce, reuse, repair, recycle”
+            </h6>
+            <div class="space-y-3">
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    The purpose of “Reduce, reuse, repair, recycle” is to minimize waste generation, extend the lifecycle of products, and promote a circular economy. This action reflects respect for natural resources and the value of human labor, while serving as an essential measure to reduce environmental pressure and address climate change in the context of limited planetary resources.
+                </p>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    By practicing reduce, reuse, repair, and recycle, individuals and communities can significantly lower resource consumption, decrease landfill waste, and cut greenhouse gas emissions. This approach not only conserves raw materials and energy but also cultivates a sense of responsibility and sustainability, fostering a society that values long-term ecological balance over short-term convenience.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-emerald-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-50 text-emerald-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 01</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Reduce single-use plastics & packaging</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Reducing disposable plastics, bags, bottles, and packaging decreases plastic pollution and production energy.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: Scientific Reports, 16(1)</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-emerald-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-50 text-emerald-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 02</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Reuse and repair before replacing</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Extending product life through reuse and repair prevents unnecessary manufacturing and saves energy and raw materials.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: J. Cleaner Production, 387</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-emerald-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-50 text-emerald-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 03</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Recycle and buy recycled products</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Recycling turns waste into new products, saving energy and reducing virgin material demand. Sorting closes the material loop.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: J. Cleaner Production, 376</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+        <h5 class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span>📸</span> Field Photography: Personal Low-Carbon Action & Evidence
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center text-xs text-slate-500">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-emerald-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="kexian.jpg" alt="Garbage Separation Action" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Garbage Separation</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Classifying plastic bottles at recycling bin</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-emerald-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="Reusable Bags.jpg" alt="Reusable Shopping Bag" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Reusable Bags Action</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Eliminating single-use plastic packaging</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-emerald-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="Fashion Store.png" alt="Circular Fashion Store" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Circular Fashion</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Vintage & sustainable clothing reuse</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-emerald-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="Refill Station.png" alt="Eco Refill Station" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Eco Refill Station</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Minimizing packaging waste at market</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="member-card-1" class="member-card hidden bg-slate-50/50 p-8 rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500 w-full">
+    
+    <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h4 class="font-extrabold text-slate-900 text-2xl tracking-tight">Zhou Tiantian (周添添)</h4>
+                <span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-sky-200/50">Active Practitioner</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1.5 font-medium">Shifting household consumption patterns · Promoting value chain sustainability</p>
+            <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                <span>💡</span> Core Action Framework: Make Your Money Count
+            </p>
+        </div>
+        <div class="flex items-center gap-4 bg-gradient-to-r from-sky-50/60 to-blue-50/60 p-4 rounded-xl border border-sky-100 min-w-[280px] justify-between shadow-inner">
+            <div class="text-left">
+                <span class="text-[10px] font-bold text-sky-800 uppercase tracking-widest block mb-1">Annual Footprint</span>
+                <div class="text-3xl font-black text-sky-950 tracking-tight">7.06 <span class="text-xs font-bold text-sky-700">t CO₂</span></div>
+            </div>
+            <div class="text-right border-l border-sky-200/60 pl-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">China Average</span>
+                <div class="text-sm font-bold text-slate-600">22.63 t</div>
+                <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1 py-0.5 rounded mt-1 inline-block">Below Average</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-sky-950 text-sky-100/90 p-5 rounded-2xl shadow-inner text-sm italic relative overflow-hidden mb-8 leading-relaxed">
+        <div class="absolute -right-2 -bottom-6 text-sky-900/40 font-serif text-8xl pointer-events-none select-none">“</div>
+        <p class="relative z-10 font-medium">
+            “My annual household carbon footprint is about 21.17 tonnes of CO₂, so my annual carbon footprint is about 7.06 tonnes of CO₂, which is lower than the average carbon footprint of China. In that case, I will stick to this healthy and green lifestyle with my family and do my best to reduce carbon emissions in daily life.”
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <span class="text-sky-600">📊</span> UN Carbon Footprint Calculator Input Evidence & Analysis
+            </h5>
+            <span class="text-[10px] bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded-md border">Data Source: UN Calculator</span>
+        </div>
+
+        <div class="mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-sky-300 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                
+                <span class="text-sky-700 font-extrabold text-base tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-sky-500"></span> Aviation & Private Flights
+                </span>
+            </div>
+            <div class="w-full aspect-[21/9] md:aspect-[3/1] lg:aspect-[4/1] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs relative">
+                <img src="Zhou Energy.jpg" alt="Zhou Tiantian Annual Footprint Breakdown" class="w-full h-full object-cover group-hover:scale-[1.01] transition duration-500">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-sky-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sky-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Household Configuration
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Zhou Household.jpg" alt="Household Demographics Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">3 persons / China / 160m² Semi-detached Unit</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-sky-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sky-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Transport & Mobility Logs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Zhou Transport.jpg" alt="Energy Usage Data Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">180 kWh/month Electricity / Natural Gas Base</p>
+            </div>
+			
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-sky-300 transition-all duration-300">
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden relative shadow-xs mb-3">
+                    <img src="zhoutiantian footprint.jpg" alt="Transit Matrix Data Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Footprint Composition Analysis</p>
+            </div>
+			
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-sky-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sky-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Lifestyle & Choice Profiling
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Zhou Lifestyle.jpg" alt="Procurement Style Mapping Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Local Product Selections & Five-Stream Waste Sorting</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="bg-white border border-slate-200/70 p-6 md:p-8 rounded-2xl shadow-xs hover:border-sky-200 transition duration-300 mb-6 flex flex-col justify-between">
+            <div>
+                <span class="bg-sky-50 text-sky-800 font-bold text-[10px] px-2.5 py-1 rounded-md tracking-wider uppercase">Theory Framework</span>
+                <h6 class="font-bold text-slate-900 text-base md:text-lg mt-3 mb-2 flex items-center gap-1.5">
+                    The objective of "Make Your Money Count"
+                </h6>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    The carbon footprint of individual consumption is responsible for 64% of global greenhouse gas emissions (Oxfam, 2015). In addition, household consumption directly or indirectly accounts for approximately two-thirds of total emissions. Therefore, shifting pattern to a low-carbon mode is a key part of mitigating climate change (UNEP, 2020).
+                </p>
+            </div>
+            <div class="text-xs text-slate-400 italic border-t border-slate-100 pt-3 mt-4">
+                Ref: Oxfam (2015) / UNEP (2020)
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-sky-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-sky-50 text-sky-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 01</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Old Clothes Donation</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Sorting out clean and intact old clothes for public charity donation avoids resource waste and pollution caused by discarding clothes randomly. It enables items to serve a new purpose.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Action: Circular Asset Stewardship</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-sky-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-sky-50 text-sky-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 02</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Environment-Friendly Goods</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Give priority to low-carbon goods with environmental protection labels, and reduce excessive packaging. Conscious purchasing decisions directly lower emissions at the source.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Strategy: Certified Green Procurement</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-sky-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-sky-50 text-sky-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 03</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Item Sharing & Exchange</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Revitalize idle items by selling them off or choosing shared rentals, actively lowering emissions caused by new product manufacturing and extending resource lifecycles.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Strategy: Circular Exchange Markets</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+        <h5 class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span>📸</span> Field Photography: Personal Low-Carbon Action & Evidence
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center text-xs text-slate-500">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-sky-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="clothes donation.jpg" alt="Old Clothes Sorting for Charity Donation" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Old Clothes Sorting & Donation</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Redirecting apparel items to target public welfare projects</p>
+            </div>
+			<div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-sky-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="donation dropoff.jpg" alt="Localized Donation Drop-off Points" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Public Donation Box Stations</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Utilizing community pick-up and donation infrastructure hubs</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-sky-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="shared flea market.jpg" alt="Flea Recycle Market Platform" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Flea & Circular Exchange Markets</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Liquidating idle assets to encourage resource extension cycles</p>
+            </div>                        
+			<div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-sky-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="eco packaging.jpg" alt="Environment-Friendly Low-Carbon Commodities" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Eco-Labeled Packaging Solutions</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Filtering incoming goods based on sustainable labels</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="member-card-2" class="member-card hidden bg-slate-50/50 p-8 rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500 w-full">
+    
+    <!-- Header Section -->
+    <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h4 class="font-extrabold text-slate-900 text-2xl tracking-tight">Wu Shuaiqi (吴帅琪)</h4>
+                <span class="bg-violet-100 text-violet-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-violet-200/50">Active Practitioner</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1.5 font-medium">Optimizing residential efficiency · Advancing domestic demand-side mitigation</p>
+            <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                <span>⚡</span> Core Action Framework: Home Energy Optimization & Phantom Load Management
+            </p>
+        </div>
+        <div class="flex items-center gap-4 bg-gradient-to-r from-violet-50/60 to-purple-50/60 p-4 rounded-xl border border-violet-100 min-w-[280px] justify-between shadow-inner">
+            <div class="text-left">
+                <span class="text-[10px] font-bold text-violet-800 uppercase tracking-widest block mb-1">Annual Footprint</span>
+                <div class="text-3xl font-black text-violet-950 tracking-tight">13.81 <span class="text-xs font-bold text-violet-700">t CO₂</span></div>
+            </div>
+            <div class="text-right border-l border-violet-200/60 pl-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">China Average</span>
+                <div class="text-sm font-bold text-slate-600">30.18 t</div>
+                <span class="text-[9px] text-rose-600 font-bold bg-rose-50 px-1 py-0.5 rounded mt-1 inline-block">Above Average</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Section -->
+    <div class="bg-violet-950 text-violet-100/90 p-5 rounded-2xl shadow-inner text-sm italic relative overflow-hidden mb-8 leading-relaxed">
+        <div class="absolute -right-2 -bottom-6 text-violet-900/40 font-serif text-8xl pointer-events-none select-none">“</div>
+        <p class="relative z-10 font-medium">
+            “According to the UN Carbon Footprint Calculator, my annual carbon footprint is approximately 55.23 tonnes of CO2. Recognizing that my current carbon footprint places a demand on the planet's ecological capacity, I am committed to a proactive mitigation strategy. By integrating ‘Save energy at home’ into my daily routine, I aim to transform my living space into a model of energy efficiency.”
+        </p>
+    </div>
+
+    <!-- UN Calculator Evidence Section -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <span class="text-violet-600">📊</span> UN Carbon Footprint Calculator Input Evidence & Analysis
+            </h5>
+            <span class="text-[10px] bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded-md border">Data Source: UN Calculator</span>
+        </div>
+
+        <!-- [已互换] 原 Aviation 区域，现替换为 Transit Log Matrix 的内容，保留长条形布局 -->
+        <div class="mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-purple-300 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-purple-700 font-extrabold text-base tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span> Aviation & Private Flights
+                </span>
+            </div>
+            <div class="w-full aspect-[21/9] md:aspect-[3/1] lg:aspect-[4/1] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs relative">
+                <img src="Wu Aviation.jpg" alt="Wu Commuter Tracking Data" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+            </div>
+            <p class="text-xs text-slate-600 font-semibold px-1">Weekly Short-Range Private Flights Allocation Tracking</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-purple-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-purple-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Household Profile Details
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Wu Household Step.jpg" alt="Wu Household Configuration" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">4 persons / China / 300m² Semi-detached Unit</p>
+            </div>
+            
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-purple-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-purple-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Transport & Mobility Logs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Wu Transport Step.jpg" alt="Wu Electricity Metrics Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">bike & walk is preferred</p>
+            </div>
+            
+            <!-- [已互换] 原 Transit Log 区域，现替换为 Aviation 的内容，保留网格卡片布局 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-purple-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-purple-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Annual Footprint Allocation
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="wushuaiqi footprint.jpg" alt="Wu Shuaiqi Annual Footprint Allocation" class="w-full h-full object-cover group-hover:scale-[1.01] transition duration-500">
+                </div>
+            </div>
+            
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-purple-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-purple-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Lifestyle Habit Inputs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="Wu Lifestyle Step.jpg" alt="Wu Consumptive Evaluation" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Frequent Dining Out Profiling / Basic Waste Classification</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theory Framework Section -->
+    <div class="mb-8">
+        <div class="bg-white border border-slate-200/70 p-6 md:p-8 rounded-2xl shadow-xs hover:border-purple-200 transition duration-300 mb-6">
+            <span class="bg-purple-50 text-purple-800 font-bold text-[10px] px-2.5 py-1 rounded-md tracking-wider">Theory Framework</span>
+            <h6 class="font-bold text-slate-900 text-base md:text-lg mt-4 mb-3">
+                The objective of “Save energy at home”
+            </h6>
+            <div class="space-y-3">
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    The primary objective of “Save energy at home” is to optimize residential energy efficiency and cultivate a sustainable consumption ethos. This action recognizes that domestic electricity demand is a significant driver of global carbon emissions, particularly in regions still dependent on fossil fuel power generation. By implementing strategic energy-saving measures, individuals can reduce their "energy intensity"—the amount of energy required to support their daily lifestyle—thereby mitigating the environmental degradation associated with resource extraction and greenhouse gas emissions.
+                </p>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    Beyond immediate carbon reduction, this action aims to foster "energy literacy," empowering individuals to understand the systemic link between personal habits and global climate stability. In a world facing both energy security challenges and climate emergencies, saving energy at home serves as a practical, scalable, and high-impact contribution to the transition toward a low-carbon society. It aligns with the principles of responsible consumption and serves as a critical personal intervention.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-purple-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-purple-50 text-purple-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 01</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Phantom Load Management</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Eliminating structural standby "phantom load" across household appliances reduces total electricity waste.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: Shuma et al. (2022)</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-purple-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-purple-50 text-purple-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 02</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">LED Technology Transition</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Replacing traditional incandescent bulbs with Light Emitting Diode (LED) technology is a high-impact technical intervention. LEDs consume up to 85% less energy and have a significantly longer lifespan compared to conventional lighting. This transition reduces the frequency of replacements and decreases the demand on the power grid. By optimizing my living space with LED technology, I am contributing to a cumulative reduction in $CO_2$ emissions and promoting a more sustainable approach to residential lighting (Santamouris & Paolini, 2023).</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: Santamouris & Paolini (2023)</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-purple-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-purple-50 text-purple-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 03</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Strategic management of high-power appliances</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Adopting eco-settings on intensive equipment and utilizing natural solar illumination alongside blind thermal regulation diminishes mechanical reliance.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Ref: (United Nations, n.d.)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Field Photography Section -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+        <h5 class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span>📸</span> Field Photography: Personal Low-Carbon Action & Evidence
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center text-xs text-slate-500">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-purple-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="smart control tablet.png" alt="Active Power Management via Home Automation Screen" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Active Power Management Controls</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Monitoring residential zones to eliminate phantom loading trends</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-purple-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="energy tracking app.png" alt="Mobile App Monitoring Residential Energy Efficiency Rating" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Residential Intensity Tracking</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Leveraging diagnostic software metrics to maintain resource literacy</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-purple-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="eco program setting.png" alt="Activating Eco Setting on High Power House Appliance" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Demand-Side Mechanical Management</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Activating eco-program profiles across heavy load operations</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-purple-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="led transition.png" alt="Installing High Efficiency Light Emitting Diode LED Technology Bulb" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Technological Lighting Transitions</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Installing high-impact LED variants to scale down draw bounds</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="member-card-3" class="member-card hidden bg-slate-50/50 p-8 rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500 w-full">
+    
+    <!-- Header Section -->
+    <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h4 class="font-extrabold text-slate-900 text-2xl tracking-tight">Wu Yutong (吴雨桐)</h4>
+                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-amber-200/50">Active Practitioner</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1.5 font-medium">Minimizing residential organic waste · Advancing conscious consumer dietary systems</p>
+            <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                <span>🍎</span> Core Action Framework: Throw Away Less Food
+            </p>
+        </div>
+        <div class="flex items-center gap-4 bg-gradient-to-r from-amber-50/60 to-orange-50/60 p-4 rounded-xl border border-amber-100 min-w-[280px] justify-between shadow-inner">
+            <div class="text-left">
+                <span class="text-[10px] font-bold text-amber-800 uppercase tracking-widest block mb-1">Annual Footprint</span>
+                <div class="text-3xl font-black text-amber-950 tracking-tight">6.88 <span class="text-xs font-bold text-amber-700">t CO₂</span></div>
+            </div>
+            <div class="text-right border-l border-amber-200/60 pl-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">China Average</span>
+                <div class="text-sm font-bold text-slate-600">22.63 t</div>
+                <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1 py-0.5 rounded mt-1 inline-block">Below Average</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Section -->
+    <div class="bg-amber-950 text-amber-100/90 p-5 rounded-2xl shadow-inner text-sm italic relative overflow-hidden mb-8 leading-relaxed">
+        <div class="absolute -right-2 -bottom-6 text-amber-900/40 font-serif text-8xl pointer-events-none select-none">“</div>
+        <p class="relative z-10 font-medium">
+            “According to my data assessment, food waste and carbon metrics are closely connected to residential consumption habits. Recognizing that uneaten food represents a massive waste of energy, land, and water resources, I am committed to a proactive zero-waste routine. By integrating careful meal planning and dynamic organic composting, I aim to significantly lower my footprint.”
+        </p>
+    </div>
+
+    <!-- UN Calculator Evidence Section -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <span class="text-amber-600">📊</span> UN Carbon Footprint Calculator Input Evidence & Analysis
+            </h5>
+            <span class="text-[10px] bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded-md border">Data Source: UN Calculator</span>
+        </div>
+
+        <!-- 顶部横幅卡片 -->
+        <div class="mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-amber-300 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-amber-700 font-extrabold text-base tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Aviation & Private Flights
+                </span>
+            </div>
+            <div class="w-full aspect-[21/9] md:aspect-[3/1] lg:aspect-[4/1] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs relative">
+                <img src="tong Aviation.jpg" alt="Wu Commuter Tracking Data" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+            </div>
+            <p class="text-xs text-slate-600 font-semibold px-1">Weekly Short-Range Private Flights Allocation Tracking</p>
+        </div>
+
+        <!-- 下方四宫格 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <!-- 宫格 1 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-amber-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-amber-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Household Profile Details
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="tong Household Step.jpg" alt="Wu Household Configuration" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">3 persons / China / 150m² Semi-detached Unit</p>
+            </div>
+            
+            <!-- 宫格 2 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-amber-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-amber-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Transport & Mobility Logs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="tong Transport Step.jpg" alt="Wu Electricity Metrics Input" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">subway as the main transport</p>
+            </div>
+            
+            <!-- 宫格 3 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-amber-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-amber-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Annual Footprint Allocation
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="tong footprint.jpg" alt="Wu Shuaiqi Annual Footprint Allocation" class="w-full h-full object-cover group-hover:scale-[1.01] transition duration-500">
+                </div>
+            </div>
+            
+            <!-- 宫格 4 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 group shadow-2xs hover:border-amber-300 transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-amber-700 font-extrabold text-sm tracking-tight flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Lifestyle Habit Inputs
+                    </span>
+                </div>
+                <div class="w-full aspect-[16/10] bg-slate-200 rounded-xl border border-slate-300/50 overflow-hidden mb-3 shadow-xs">
+                    <img src="tong Lifestyle Step.jpg" alt="Wu Consumptive Evaluation" class="w-full h-full object-cover group-hover:scale-[1.01] group-hover:brightness-105 transition duration-500">
+                </div>
+                <p class="text-xs text-slate-600 font-semibold px-1">Frequent Dining Out Profiling / Basic Waste Classification</p>
+            </div>
+        </div>
+    </div> <!-- [已修复] 这里移除了原先多余的一个 </div>，保证结构闭合正确 -->
+
+    <!-- Theory Framework Section -->
+    <div class="mb-8">
+        <div class="bg-white border border-slate-200/70 p-6 md:p-8 rounded-2xl shadow-xs hover:border-amber-200 transition duration-300 mb-6 flex flex-col justify-between">
+            <div>
+                <span class="bg-amber-50 text-amber-800 font-bold text-[10px] px-2.5 py-1 rounded-md tracking-wider">Theory Framework</span>
+                <h6 class="font-bold text-slate-900 text-base md:text-lg mt-3 mb-2 flex items-center gap-1.5">
+                    The objective of “Throw Away Less Food”
+                </h6>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    The purpose of this action is to reduce greenhouse gas emissions caused by food waste, particularly the methane released from the decomposition of food in landfills. Its goal is to enhance the efficiency of resource utilization, ensuring that food is fully utilized rather than discarded, which also helps to reduce the carbon footprint associated with food production, transportation and processing.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-amber-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-amber-50 text-amber-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 01</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Conscious Purchase Planning</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Formulating structured shopping logs prevents bulk over-purchasing of short shelf-life items. Prioritizing correct storage parameters limits systematic organic spoilage and optimizes municipal resource distribution.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Strategy: Preventive Sourcing Control</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-amber-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-amber-50 text-amber-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 02</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Biomass Sorting</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Isolating unavoidable organic elements from general dry refuse streams prevents anaerobic degradation inside landfills.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Framework: UN SDG Goal 12.3 Target</div>
+            </div>
+            <div class="bg-white border border-slate-200/70 p-5 rounded-2xl shadow-xs hover:border-amber-200 transition duration-300 flex flex-col justify-between">
+                <div>
+                    <span class="bg-amber-50 text-amber-800 font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase">‘Carbon Offset’ Solution 03</span>
+                    <h6 class="font-bold text-slate-900 text-sm mt-2 mb-2 flex items-center gap-1.5">Circular Composting</h6>
+                    <p class="text-xs text-slate-500 leading-relaxed">Converting residual biomass via managed home composting cycles creates localized nutrient loops and significantly lowers emission output.</p>
+                </div>
+                <div class="text-[11px] text-slate-400 italic border-t border-slate-100 pt-3 mt-4">Framework: UN SDG Goal 12.3 Target</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Field Photography Section -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+        <h5 class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span>📸</span> Field Photography: Personal Low-Carbon Action & Evidence
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center text-xs text-slate-500">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-amber-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="food planning.jpg" alt="Conscious Kitchen Portioning and Meal Preparation" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Meal Portion Management</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Planning strict domestic portions to eliminate excess leftovers</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-amber-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="food storage glass.jpg" alt="Organized Glass Food Preservation Containers" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Aesthetic Longevity Storage</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Using verified storage seals to maximize produce life cycles</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-amber-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="kitchen composting bin.jpg" alt="Active Residential Compost Bin Unit" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Biomass Circular Composting</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Diverting organic trimmings into active zero-waste compost units</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-xs group hover:bg-white hover:border-amber-200 transition duration-300">
+                <div class="w-full aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden mb-3 relative shadow-xs">
+                    <img src="loose produce sourcing.jpg" alt="Sourcing Loose Fresh Unpackaged Produce" class="w-full h-full object-cover group-hover:scale-103 transition duration-500">
+                </div>
+                <p class="text-slate-800 font-bold truncate text-sm">Conscious Quantity Sourcing</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Sourcing exact loose counts to prevent packaging and bulk waste</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+        </div>
+</section>
+           
+
+        <!-- Page 5: Reference List -->
+        <section id="page-references" class="page-section hidden">
+            <div class="max-w-4xl mx-auto py-12 px-4">
+                <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">Reference List</h2>
+                <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200">
+                    <ul class="space-y-6 text-sm text-slate-600">
+                        <li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[1] Climate Action Tracker. (2026). <em>South Africa country assessment: Just energy transition implementation and climate targets</em>. <a href="https://climateactiontracker.org/countries/south-africa/" target="_blank">https://climateactiontracker.org/countries/south-africa/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[2] Climate Neutral Now. (n.d.). <em>UN carbon footprint calculator</em>. <a href="https://offset.climateneutralnow.org/footprintcalc" target="_blank">https://offset.climateneutralnow.org/footprintcalc</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[3] Council for Scientific and Industrial Research. (2025). <em>Statistics of utility-scale power generation in South Africa 2024</em>. CSIR Energy Centre. <a href="https://www.csir.co.za/" target="_blank">https://www.csir.co.za/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[4] Dagum, L. J., Estrada, V., Amihan, H., Penaflor, E., Hilomen, A., Corpuz, F. J., Bambic, B., Licuanan, W., Soriano, M., &amp; David, L. (2024). West Philippine Sea coral reef imagery using ARRAS technology. <em>OCEANS 2024 - Halifax</em>, 1–5. <a href="https://doi.org/10.1109/OCEANS55160.2024.10754536" target="_blank">https://doi.org/10.1109/OCEANS55160.2024.10754536</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[5] D’Urzo, M., &amp; Campagnaro, C. (2023). Design-led repair &amp; reuse: An approach for an equitable, bottom-up, innovation-driven circular economy. <em>Journal of Cleaner Production, 387</em>, Article 135724. <a href="https://doi.org/10.1016/j.jclepro.2022.135724" target="_blank">https://doi.org/10.1016/j.jclepro.2022.135724</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[6] Eskom Holdings SOC Ltd. (2024). <em>Integrated report 2024: Mitigating grid instability and transitioning to renewable energy</em>. <a href="https://www.eskom.co.za/" target="_blank">https://www.eskom.co.za/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[7] Global Coral Reef Monitoring Network. (2020). <em>Status of coral reefs of the world: 2020</em>. <a href="https://gcrmn.net/2020-report/" target="_blank">https://gcrmn.net/2020-report/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[8] Global Goals. (2023). <em>The 17 goals</em>. https://www.globalgoals.org/goals/</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[9] Kenya National Bureau of Statistics. (2019). <em>Kenya population and housing census: Analytical report on urbanisation</em> (Vol. IX). The National Treasury and Planning, Republic of Kenya. <a href="https://africacheck.org/sites/default/files/media/documents/202208/Kenya%20Urbanisation%20Report%20-April%202022.pdf" target="_blank">https://africacheck.org/sites/default/files/media/documents/202208/Kenya%20Urbanisation%20Report%20-April%202022.pdf</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[10] National Council for Population and Development. (2025). <em>Policy brief No. 10: Urbanization and access to essential services</em>. <a href="https://ncpd.go.ke/wp-content/uploads/2026/02/Policy-Brief-on-Urbanization-Final.pdf" target="_blank">https://ncpd.go.ke/wp-content/uploads/2026/02/Policy-Brief-on-Urbanization-Final.pdf</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[11] Organisation for Economic Co-operation and Development. (2025). <em>OECD economic surveys: South Africa 2025</em>. OECD Publishing. <a href="https://doi.org/10.1787/7e6a132a-en" target="_blank">https://doi.org/10.1787/7e6a132a-en</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[12] Oruc Baci, N., Santiago-Collazo, F. L., &amp; Jambeck, J. R. (2026). Evaluating macroplastics transport thresholds for overland flow processes. <em>Journal of Hazardous Materials Advances, 22</em>, Article 101200. <a href="https://doi.org/10.1016/j.hazadv.2026.101200" target="_blank">https://doi.org/10.1016/j.hazadv.2026.101200</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[13] Oxfam. (2015). <em>Extreme carbon inequality</em>. <a href="https://www-cdn.oxfam.org/s3fs-public/file_attachments/mb-extreme-carbon-inequality-021215-en.pdf" target="_blank">https://www-cdn.oxfam.org/s3fs-public/file_attachments/mb-extreme-carbon-inequality-021215-en.pdf</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[14] Qiao, L., Tang, Y., Li, Y., Liu, M., Yuan, X., Wang, Q., &amp; Ma, Q. (2022). Life cycle assessment of three typical recycled products from construction and demolition waste. <em>Journal of Cleaner Production, 376</em>, Article 134139. <a href="https://doi.org/10.1016/j.jclepro.2022.134139" target="_blank">https://doi.org/10.1016/j.jclepro.2022.134139</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[15] Rappler. (2023, April 20). <em>Philippines dominates global ocean plastic pollution chart</em>. <a href="https://www.rappler.com/philippines/philippines-dominates-global-ocean-plastic-pollution-chart-at-36-shows-study/" target="_blank">https://www.rappler.com/philippines/philippines-dominates-global-ocean-plastic-pollution-chart-at-36-shows-study/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[16] Santamouris, M., &amp; Paolini, R. (2023). Energy retrofitting of residential buildings: The impact of advanced lighting and thermal insulation on carbon reduction. <em>Energy and Buildings, 281</em>, Article 112756. <a href="https://doi.org/10.1016/j.enbuild.2022.112756" target="_blank">https://doi.org/10.1016/j.enbuild.2022.112756</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[17] Shuma, M., Mbohwa, C., &amp; Madanhire, I. (2022). Household energy efficiency awareness and behavior: A study on reducing phantom load in residential sectors. <em>Procedia CIRP, 107</em>, 1452–1457. <a href="https://doi.org/10.1016/j.procir.2022.05.173" target="_blank">https://doi.org/10.1016/j.procir.2022.05.173</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[18] South African Reserve Bank. (2024). <em>Monetary policy review: The structural impact of energy constraints on national GDP</em>. <a href="https://www.resbank.co.za/" target="_blank">https://www.resbank.co.za/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[19] Statistics South Africa. (2026). <em>Electricity, gas and water supply industry</em> (Report No. 41-01-02). <a href="https://www.statssa.gov.za/" target="_blank">https://www.statssa.gov.za/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[20] Tanhayi, M., Chamani, A., &amp; Mohammadi, S. (2026). Mindfulness promotes pro-environmental behaviors to reduce single-use plastic pollution. <em>Scientific Reports, 16</em>(1), Article 6868. <a href="https://doi.org/10.1038/s41598-026-36934-z" target="_blank">https://doi.org/10.1038/s41598-026-36934-z</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[21] UN-Habitat. (2018). <em>Country programme document for Kenya 2018–2021</em>.</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[22] United Nations. (2015). <em>Transforming our world: The 2030 Agenda for Sustainable Development</em>. Department of Economic and Social Affairs.</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[23] United Nations. (2024). <em>ActNow: Ten actions to help tackle the climate crisis</em>.</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[24] United Nations. (n.d.). <em>ActNow: Save energy at home</em>. Climate Action. <a href="https://www.un.org/en/actnow/ten-actions#save-energy" target="_blank">https://www.un.org/en/actnow/ten-actions#save-energy</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[25] United Nations. (n.d.). <em>Goal 7: Ensure access to affordable, reliable, sustainable and modern energy for all</em>. Department of Economic and Social Affairs. <a href="https://sdgs.un.org/goals/goal7" target="_blank">https://sdgs.un.org/goals/goal7</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[26] United Nations. (n.d.). <em>Goal 11: Sustainable cities and communities</em>. <a href="https://sdgs.un.org/goals/goal11" target="_blank">https://sdgs.un.org/goals/goal11</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[27] United Nations. (n.d.). <em>Goal 14: Life below water</em>. <a href="https://www.un.org/sustainabledevelopment/oceans/" target="_blank">https://www.un.org/sustainabledevelopment/oceans/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[28] United Nations Development Programme. (2023). <em>Integrated SDG insights: Kenya</em>. <a href="https://data.undp.org/sites/g/files/zskgke476/files/2023-11/undp_-_sdg_ken.pdf" target="_blank">https://data.undp.org/sites/g/files/zskgke476/files/2023-11/undp_-_sdg_ken.pdf</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[29] United Nations Environment Programme. (2020). <em>Emissions gap report 2020</em>. <a href="https://www.unep.org/resources/emissions-gap-report-2020" target="_blank">https://www.unep.org/resources/emissions-gap-report-2020</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[30] Wits University. (2026, March 5). <em>The social cost of load shedding: Energy poverty in informal settlements</em>. Wits News. <a href="https://www.wits.ac.za/news/" target="_blank">https://www.wits.ac.za/news/</a></li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[31] World Bank. (2016). <em>Improving living conditions for Kenya’s urban residents (Kenya Municipal Program)</em>.</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[32] World Bank. (2023). <em>Carbon emissions per capita data</em>.</li>
+<li style="padding-left: 2rem; text-indent: -2rem; margin-bottom: 0.5rem;">[33] WWF. (2024). <em>Environmental footprint calculator</em>.</li>
+</ul>
+                    </ul>
+                    <div class="mt-12 pt-8 border-t border-slate-100 text-center">
+                        <p class="text-xs text-slate-400">References formatted according to APA 7th Edition standards.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-50 border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-slate-500">&copy; 2026 Victoria University Group Assignment - SDG Project</p>
+        </div>
+    </footer >
+
+<script>
+    // 🟢 1. SDG 17 动态网格渲染逻辑
+    document.addEventListener("DOMContentLoaded", () => {
+        const sdgGoals = [
+            { id: 1, name: "No Poverty", img: "sdg1.jpg" },
+            { id: 2, name: "Zero Hunger", img: "sdg2.jpg" },
+            { id: 3, name: "Good Health and Well-being", img: "sdg3.jpg" },
+            { id: 4, name: "Quality Education", img: "sdg4.jpg" },
+            { id: 5, name: "Gender Equality", img: "sdg5.jpg" },
+            { id: 6, name: "Clean Water and Sanitation", img: "sdg6.jpg" },
+            { id: 7, name: "Affordable and Clean Energy", img: "sdg7.jpg" },
+            { id: 8, name: "Decent Work and Economic Growth", img: "sdg8.jpg" },
+            { id: 9, name: "Industry, Innovation and Infrastructure", img: "sdg9.jpg" },
+            { id: 10, name: "Reduced Inequalities", img: "sdg10.jpg" },
+            { id: 11, name: "Sustainable Cities and Communities", img: "sdg11.jpg" },
+            { id: 12, name: "Responsible Consumption and Production", img: "sdg12.jpg" },
+            { id: 13, name: "Climate Action", img: "sdg13.jpg" },
+            { id: 14, name: "Life Below Water", img: "sdg14.jpg" },
+            { id: 15, name: "Life on Land", img: "sdg15.jpg" },
+            { id: 16, name: "Peace, Justice and Strong Institutions", img: "sdg16.jpg" },
+            { id: 17, name: "Partnerships for the Goals", img: "sdg17.jpg" }
+        ];
+
+        const gridContainer = document.getElementById("goals-grid");
+        if (gridContainer) {
+            gridContainer.innerHTML = sdgGoals.map(goal => `
+                <div class="group relative aspect-square bg-slate-100 rounded-xl overflow-hidden shadow-sm border border-slate-200/60 hover:shadow-md hover:border-emerald-500 transition-all duration-300 cursor-pointer">
+                    <img src="${goal.img}" alt="SDG ${goal.id}: ${goal.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-slate-900/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-left">
+                        <span class="text-xs font-bold text-emerald-400">Goal ${goal.id}</span>
+                        <h4 class="text-white font-bold text-sm leading-tight mt-0.5">${goal.name}</h4>
+                    </div>
+                </div>
+            `).join("");
+        }
+    });
+
+    // 🟢 2. 页面主导航切换逻辑
+    function showPage(pageId) {
+        // 隐藏所有大页面
+        document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden'));
+        
+        // 显示目标大页面
+        const targetPage = document.getElementById(`page-${pageId}`);
+        if (targetPage) {
+            targetPage.classList.remove('hidden');
+        }
+
+        // 切换导航高亮状态
+        document.querySelectorAll('[data-page]').forEach(el => {
+            if (el.getAttribute('data-page') === pageId) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
+        });
+
+        // 滚动回顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // 如果是 Act Now 页面则初始化图表
+        if (pageId === 'actnow') {
+            setTimeout(initChart, 50);
+        }
+    }
+
+    // 🟢 3. 完美兼容的内部 Tab 与卡片切换逻辑 (整合版)
+    function showTab(type, index) {
+    if (type === 'actnow') {
+        // 🟢 专门处理 Act Now 页面下的 Member 个人卡片切换
+        const cards = document.querySelectorAll('.member-card');
+        const tabs = document.querySelectorAll('#page-actnow .research-tab');
+        
+        // 隐藏所有卡片，重置所有按钮样式
+        cards.forEach(card => card.classList.add('hidden'));
+        tabs.forEach(tab => {
+            tab.classList.remove('bg-white', 'shadow-sm', 'text-emerald-600');
+            tab.classList.add('text-slate-500', 'hover:text-slate-700');
+        });
+        
+        // 显示当前点击的卡片，高亮当前按钮
+        const targetCard = document.getElementById(`member-card-${index}`);
+        if (targetCard) targetCard.classList.remove('hidden');
+        if (tabs[index]) {
+            tabs[index].classList.remove('text-slate-500', 'hover:text-slate-700');
+            tabs[index].classList.add('bg-white', 'shadow-sm', 'text-emerald-600');
+        }
+    } else if (type === 'research') {
+        // 🟢 专门处理 SDG 17 Goals 页面下的国家研究报告切换 (SDG 11, 14, 13, 7)
+        const tabs = document.querySelectorAll(`#page-goals .research-tab`);
+        const contents = document.querySelectorAll(`#page-goals .tab-content`);
+        
+        tabs.forEach((tab, i) => {
+            if (i === index) {
+                tab.classList.add('bg-white', 'shadow-sm', 'text-emerald-600');
+                tab.classList.remove('text-slate-500');
+            } else {
+                tab.classList.remove('bg-white', 'shadow-sm', 'text-emerald-600');
+                tab.classList.add('text-slate-500');
+            }
+        });
+
+        contents.forEach((content, i) => {
+            if (i === index) content.classList.add('active');
+            else content.classList.remove('active');
+        });
+    }
+}
+
+    // 🟢 4. 移动端菜单
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        if (menu) menu.classList.toggle('hidden');
+    }
+
+    // 🟢 5. Chart.js 碳足迹图表渲染逻辑
+    let chartInstance = null;
+    function initChart() {
+        const canvas = document.getElementById('carbonChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+        
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Individual Avg (USA)', 'Global Average', '2030 SDG Target'],
+                datasets: [{
+                    data: [14.7, 4.4, 2.0],
+                    backgroundColor: [
+                        'rgba(244, 63, 94, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(16, 185, 129, 0.9)'
+                    ],
+                    borderRadius: 6,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.parsed.y} tons CO2e`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        title: { display: true, text: 'Tons per person / year', font: { size: 10, weight: '600' } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
