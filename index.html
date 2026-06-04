@@ -216,32 +216,32 @@
             </div>
 
             <div class="mb-12 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <div class="video-container mb-4" id="video-box">
-                    <div class="video-placeholder relative w-full aspect-video rounded-xl cursor-pointer overflow-hidden group" 
-                         id="video-placeholder" 
-                         style="background-image: url('https://img.youtube.com/vi/0XTBYMfZyrM/maxresdefault.jpg'); background-size: cover; background-position: center;">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                            <div class="w-16 h-16 flex items-center justify-center rounded-full bg-white/90 text-slate-800 shadow-lg transform group-hover:scale-110 transition-transform duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 ml-1">
-                                    <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+    <div class="video-container mb-4" id="video-box">
+        <div class="video-placeholder relative w-full aspect-video rounded-xl cursor-pointer overflow-hidden group" 
+             id="video-placeholder" 
+             style="background-image: url('https://img.youtube.com/vi/0XTBYMfZyrM/maxresdefault.jpg'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center" id="play-button-overlay">
+                <div class="w-16 h-16 flex items-center justify-center rounded-full bg-white/90 text-slate-800 shadow-lg transform group-hover:scale-110 transition-transform duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 ml-1">
+                        <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+                    </svg>
                 </div>
-                
-                <div class="px-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-1">Introduction to the SDGs</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed italic">
-                            Learn about the "world's best plan" for a better future. This UN video outlines the 17 goals designed to transform our world by 2030.
-                        </p>
-                    </div>
-                    <a href="https://www.youtube.com/watch?v=0XTBYMfZyrM" target="_blank" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 hover:bg-slate-100 transition-colors uppercase tracking-wider shrink-0">
-                        Watch on YouTube ↗
-                    </a>
-                </div>
-            </div> 
+            </div>
+        </div>
+    </div>
+    
+    <div class="px-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h4 class="text-sm font-bold text-slate-800 mb-1">Introduction to the SDGs</h4>
+            <p class="text-xs text-slate-500 leading-relaxed italic">
+                Learn about the "world's best plan" for a better future. This UN video outlines the 17 goals designed to transform our world by 2030.
+            </p>
+        </div>
+        <a href="https://www.youtube.com/watch?v=0XTBYMfZyrM" target="_blank" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 hover:bg-slate-100 transition-colors uppercase tracking-wider shrink-0">
+            Watch on YouTube ↗
+        </a>
+    </div>
+</div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="goals-grid">
                 </div>
@@ -2376,7 +2376,34 @@ Carbon footprint refers to the total amount of carbon dioxide and other greenhou
             }
         });
     }
+// 🟢 6. YouTube 视频点击无缝播放逻辑 (Lazy Load)
+    document.addEventListener("DOMContentLoaded", () => {
+        const placeholder = document.getElementById("video-placeholder");
+        
+        if (placeholder) {
+            placeholder.addEventListener("click", function() {
+                const videoId = "0XTBYMfZyrM"; // 视频 ID
+                const iframe = document.createElement("iframe");
+                
+                // 设置 iframe 属性，包含自动播放和防 153 错误的 Referrer 策略
+                iframe.setAttribute("src", `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`);
+                iframe.setAttribute("frameborder", "0");
+                iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+                iframe.setAttribute("allowfullscreen", "true");
+                iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin"); // 防止本地或严苛环境下的 Error 153
+                
+                iframe.setAttribute("class", "absolute inset-0 w-full h-full rounded-xl z-10");
+                
+                // 清理占位符，嵌入真正的视频
+                this.innerHTML = ""; 
+                this.style.backgroundImage = "none";
+                this.classList.remove("cursor-pointer", "group");
+                this.appendChild(iframe);
+            });
+        }
+    });
 </script>
+
 
 <script>
 (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="2tG4xlYNADbYuLM5TCCJr";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
