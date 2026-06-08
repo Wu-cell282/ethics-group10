@@ -285,7 +285,7 @@
         }
 
         /* ==========================================================================
-           4. 主体面板设计：加厚版玻璃拟态（内容布局完全保持不变）
+           4. 主体面板设计：加厚版玻璃拟态（🎯 已完美融合右侧向下微型滑轮）
            ========================================================================== */
         #eco-root {
             position: relative;
@@ -297,13 +297,34 @@
             border-radius: 16px;
             padding: 1.5rem 1.25rem;
             box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08); 
-            overflow: hidden;
             min-height: 520px;
             font-family: 'Segoe UI', system-ui, sans-serif;
+
+            /* 🚀 核心增加：限制最大高度，并在内容超长时自动在右侧生成滑轮 */
+            max-height: 72vh;          /* 面板最高占据屏幕高度的 72% */
+            overflow-y: auto;          /* 纵向超出时自动生成丝滑滚动的滑轮 */
+            overflow-x: hidden;        /* 彻底锁死横向，防止左右乱晃 */
+            scroll-behavior: smooth;   /* 丝滑阻尼滚动 */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 💎 专属定制：Apple风极简半透明微型滑轮（静止时隐藏，摸上去泛出生态绿） */
+        #eco-root::-webkit-scrollbar {
+            width: 5px; /* 极细设计，保持高级感 */
+        }
+        #eco-root::-webkit-scrollbar-track {
+            background: transparent; /* 轨道完全透明 */
+        }
+        #eco-root::-webkit-scrollbar-thumb {
+            background: rgba(15, 23, 42, 0.12); /* 半透明石墨色滑块 */
+            border-radius: 10px;
+        }
+        #eco-root::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.45); /* 鼠标放上去时亮起生态绿 */
         }
 
         /* ==========================================================================
-           5. 安全作用域防护网（完全保持原有布局）
+           5. 安全作用域防护网（你的原有子元素样式，完美保留）
            ========================================================================== */
         #eco-root .eco-content { position: relative; z-index: 1; }
         #eco-root .eco-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
