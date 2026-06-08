@@ -9,6 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap');
         
+        /* 1. 网页原本的全局与导航样式 */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #fcfcfb;
@@ -113,11 +114,249 @@
             backdrop-filter: blur(8px);
             background-color: rgba(15, 23, 42, 0.95);
         }
-		#page-about .space-y-2 p { 
-    text-align: justify; 
-    hyphens: auto; 
-    word-break: break-word; 
-}
+
+        #page-about .space-y-2 p { 
+            text-align: justify; 
+            hyphens: auto; 
+            word-break: break-word; 
+        }
+
+ /* ==========================================================================
+           2. 环保游戏独立抽屉外壳与核心动画（Fixed 固定定位，完全脱离正常文档流）
+           ========================================================================== */
+        .eco-drawer-wrapper {
+            position: fixed;
+            left: -490px;
+            top: 7%; /* 已经按照要求上调到屏幕顶部的 7% 位置 */
+            z-index: 9999;
+            display: flex;
+            align-items: flex-start;
+            transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .eco-drawer-wrapper.active { 
+            left: 15px; 
+        }
+
+        /* ── 树叶飘落动画 ── */
+        @keyframes floatUp {
+            0%   { transform: translateY(0) rotate(0deg);   opacity: 0.8; }
+            100% { transform: translateY(-340px) rotate(360deg); opacity: 0; }
+        }
+        .leaf-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp linear forwards;
+            z-index: 0;
+        }
+
+        /* ── 反馈悬浮气泡 ── */
+        @keyframes float-msg {
+            0%   { transform: translateY(0);   opacity: 1; }
+            100% { transform: translateY(-44px); opacity: 0; }
+        }
+        .float-msg {
+            position: absolute;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2e7d32;
+            pointer-events: none;
+            animation: float-msg 1s ease-out forwards;
+            z-index: 20;
+            white-space: nowrap;
+        }
+
+
+        /* ==========================================================================
+           3. 按钮设计：加厚版玻璃拟态 + 24px 大手指图标（超醒目，无惧任何背景压制）
+           ========================================================================== */
+        .eco-drawer-trigger {
+            background-color: rgba(46, 125, 50, 0.75); /* 加厚绿底，抗浅色背景 */
+            backdrop-filter: blur(16px);               /* 毛玻璃模糊特效 */
+            -webkit-backdrop-filter: blur(16px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.35); /* 精致的白色镜面边缘高光 */
+            border-left: none;
+            border-radius: 0 16px 16px 0;      /* 增大圆角，看起来更加圆润美观 */
+            
+            /* 🚀 核心修改点：大幅度增加内边距与字体大小，让绿手指极其显眼 */
+            padding: 20px 16px;                
+            font-size: 24px;                   
+            
+            cursor: pointer;
+            box-shadow: 6px 4px 25px rgba(0, 0, 0, 0.15); /* 加深立体阴影 */
+            position: absolute;
+            
+            /* 🚀 核心调整点：由于按钮宽了，修正偏移像素，防止被屏幕边缘遮挡 */
+            right: -52px;                      
+            top: 30px;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 鼠标悬停时的优雅动态反馈 */
+        .eco-drawer-trigger:hover { 
+            background-color: rgba(30, 94, 33, 0.9); 
+            box-shadow: 6px 4px 30px rgba(46, 125, 50, 0.3);
+            padding-left: 20px; /* 悬浮时按钮会微微向右伸出，暗示可点击 */
+        }
+        .eco-drawer-trigger span {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .eco-drawer-wrapper.active .eco-drawer-trigger span {
+            transform: rotate(180deg); /* 展开时 👉 会反转变成 👈 */
+        }
+
+
+        /* ==========================================================================
+           4. 主体面板设计：加厚版玻璃拟态（不透明度 0.88，绝对不会透出背景文字造成杂乱）
+           ========================================================================== */
+        #eco-root {
+            position: relative;
+            width: 480px;
+            background: rgba(255, 255, 255, 0.88);     /* 接近实体白但带有一点高级通透感 */
+            backdrop-filter: blur(25px);               /* 强力模糊，彻底隔绝背景 */
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.6); /* 强化高光边缘质感 */
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08); /* 适配主网页的柔和投影 */
+            overflow: hidden;
+            min-height: 520px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+
+        /* ==========================================================================
+           5. 安全作用域防护网：以下所有组件内部样式全部强制绑定 #eco-root
+              （彻底杜绝组件样式对外扩散，百分之百保证你的主网页排版完好无损！）
+           ========================================================================== */
+        #eco-root .eco-content { 
+            position: relative; 
+            z-index: 1; 
+        }
+        #eco-root .eco-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        #eco-root .eco-title  { font-size: 20px; font-weight: 600; color: #1b5e20; }
+        #eco-root .eco-sub    { font-size: 13px; color: #666; margin-top: 2px; }
+
+        #eco-root .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        #eco-root .counter-card {
+            background: #f0faf0;
+            border: 1px solid #c8e6c9;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        #eco-root .counter-label { font-size: 12px; color: #555; margin-bottom: 4px; }
+        #eco-root .counter-number {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1b5e20;
+            font-family: 'Courier New', monospace;
+            transition: transform 0.12s;
+        }
+        #eco-root .goal-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin: 8px 0 4px;
+        }
+        #eco-root .goal-track {
+            height: 6px;
+            background: #d5ecd5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #eco-root .goal-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43a047, #1b5e20);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        #eco-root .tree-line { font-size: 12px; color: #555; margin-top: 8px; }
+        #eco-root .tree-line span { font-weight: 600; color: #2e7d32; }
+
+        #eco-root .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        #eco-root .stat-card {
+            background: #f9fdf9;
+            border: 1px solid #d5ecd5;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        #eco-root .stat-label { font-size: 11px; color: #777; margin-bottom: 2px; }
+        #eco-root .stat-value { font-size: 20px; font-weight: 700; color: #1b5e20; font-family: 'Courier New', monospace; }
+
+        #eco-root .section-label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 8px; }
+        #eco-root .btn-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+
+        #eco-root .eco-btn {
+            background: #ffffff;
+            border: 1px solid #c8e6c9;
+            color: #1b5e20;
+            padding: 9px 13px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+            box-shadow: 0 2px 6px rgba(46,125,50,0.08);
+        }
+        #eco-root .eco-btn:hover { background: #e8f5e9; box-shadow: 0 4px 10px rgba(46,125,50,0.15); }
+        #eco-root .eco-btn:active { transform: scale(0.96); }
+
+        #eco-root .impact-badge {
+            font-size: 11px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        #eco-root .activity-log {
+            background: #f5fbf5;
+            border: 1px solid #d5ecd5;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #555;
+            min-height: 40px;
+        }
+        #eco-root .activity-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid #e8f5e8;
+        }
+        #eco-root .activity-row:last-child { border-bottom: none; }
+        #eco-root .activity-amount { color: #2e7d32; font-weight: 600; }
     </style>
 </head>
 <body class="text-slate-700 antialiased">
@@ -1385,7 +1624,88 @@ Carbon footprint refers to the total amount of carbon dioxide and other greenhou
         </div>
 
     </div>
+</div><div id="ecoDrawer" class="eco-drawer-wrapper">
+  <button class="eco-drawer-trigger" onclick="toggleEcoWidget()" aria-label="Toggle Eco-Warriors panel">
+    <span>👉</span>
+  </button>
+
+  <div id="eco-root">
+    <div id="leaf-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;"></div>
+
+    <div class="eco-content">
+
+      <!-- Header -->
+      <div class="eco-header">
+        <div>
+          <div class="eco-title">🌍 Eco-Warriors Hub</div>
+          <div class="eco-sub">Together we're saving the planet</div>
+        </div>
+        <div id="level-badge" class="level-badge" style="background:#e8f5e9;color:#2e7d32;">
+          <i class="ti ti-seedling"></i>
+          <span id="level-label">Seedling</span>
+        </div>
+      </div>
+
+      <!-- Global counter -->
+      <div class="counter-card">
+        <div class="counter-label">Global CO₂ saved together</div>
+        <div id="global-counter" class="counter-number">142.50 kg</div>
+        <div class="goal-meta">
+          <span>Community goal: 200 kg</span>
+          <span id="goal-pct">71%</span>
+        </div>
+        <div class="goal-track">
+          <div id="goal-fill" class="goal-fill" style="width:71%;"></div>
+        </div>
+        <div class="tree-line">= <span id="tree-eq">9.5</span> trees worth of absorption 🌳</div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Your impact</div>
+          <div id="personal-counter" class="stat-value">0.00 kg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Daily streak</div>
+          <div class="stat-value"><span id="streak-count">0</span> <span style="font-size:13px;font-weight:400;">days</span> <span id="streak-fire"></span></div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="section-label">👇 Log an action:</div>
+      <div class="btn-grid" id="btn-grid">
+        <button class="eco-btn" onclick="logAction(0.05,'Unplugged a device',this)">
+          <i class="ti ti-plug-off"></i> Unplugged device <span class="impact-badge">+0.05 kg</span>
+        </button>
+        <button class="eco-btn" onclick="logAction(0.12,'Used natural light',this)">
+          <i class="ti ti-sun"></i> Natural light <span class="impact-badge">+0.12 kg</span>
+        </button>
+        <button class="eco-btn" onclick="logAction(0.30,'Took public transit',this)">
+          <i class="ti ti-bus"></i> Public transit <span class="impact-badge">+0.30 kg</span>
+        </button>
+        <button class="eco-btn" onclick="logAction(0.08,'Skipped meat',this)">
+          <i class="ti ti-salad"></i> Skipped meat <span class="impact-badge">+0.08 kg</span>
+        </button>
+        <button class="eco-btn" onclick="logAction(0.20,'Brought reusable bag',this)">
+          <i class="ti ti-shopping-bag"></i> Reusable bag <span class="impact-badge">+0.20 kg</span>
+        </button>
+        <button class="eco-btn" onclick="logAction(0.50,'Planted something',this)">
+          <i class="ti ti-plant-2"></i> Planted something <span class="impact-badge">+0.50 kg</span>
+        </button>
+      </div>
+
+      <!-- Activity log -->
+      <div id="activity-log" class="activity-log">No actions logged yet. Start saving!</div>
+	  <div class="text-right mt-4">
+    <button onclick="resetEcoGame()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold underline cursor-pointer">
+        🔄 Reset Game Data
+    </button>
 </div>
+
+    </div><!-- /.eco-content -->
+  </div><!-- /#eco-root -->
+</div><!-- /#ecoDrawer -->
         
   
 
@@ -2402,6 +2722,156 @@ Carbon footprint refers to the total amount of carbon dioxide and other greenhou
             });
         }
     });
+
+	// 🟢7游戏按钮
+	  /* ── Toggle drawer ── */
+  function toggleEcoWidget() {
+    document.getElementById('ecoDrawer').classList.toggle('active');
+  }
+
+  /* ── Levels ── */
+  const LEVELS = [
+    { label: 'Seedling', min: 0,   icon: 'ti-seedling', bg: '#e8f5e9', color: '#2e7d32' },
+    { label: 'Sprout',   min: 0.3, icon: 'ti-plant',    bg: '#e8f5e9', color: '#2e7d32' },
+    { label: 'Sapling',  min: 1,   icon: 'ti-trees',    bg: '#e1f5ee', color: '#0f6e56' },
+    { label: 'Guardian', min: 3,   icon: 'ti-leaf',     bg: '#e6f1fb', color: '#185fa5' },
+    { label: 'Eco Hero', min: 7,   icon: 'ti-award',    bg: '#faeeda', color: '#854f0b' },
+  ];
+
+  /* ── State ── */
+  let globalSavings = 142.5;
+  let userSavings   = parseFloat(localStorage.getItem('eco_user_savings') || '0');
+  let streak        = parseInt(localStorage.getItem('eco_streak') || '0');
+  let lastLogDate   = localStorage.getItem('eco_last_date');
+  let activityLog   = JSON.parse(localStorage.getItem('eco_log') || '[]');
+
+  /* ── Helpers ── */
+  function getLevel(kg) {
+    let lvl = LEVELS[0];
+    for (const l of LEVELS) { if (kg >= l.min) lvl = l; }
+    return lvl;
+  }
+
+  function updateUI() {
+    const total = globalSavings + userSavings;
+    document.getElementById('global-counter').textContent = total.toFixed(2) + ' kg';
+    document.getElementById('personal-counter').textContent = userSavings.toFixed(2) + ' kg';
+
+    const pct = Math.min(100, (total / 200 * 100)).toFixed(0);
+    document.getElementById('goal-pct').textContent = pct + '%';
+    document.getElementById('goal-fill').style.width = pct + '%';
+    document.getElementById('tree-eq').textContent = (total / 15).toFixed(1);
+
+    document.getElementById('streak-count').textContent = streak;
+    document.getElementById('streak-fire').textContent = streak >= 3 ? '🔥' : '';
+
+    const lvl = getLevel(userSavings);
+    const badge = document.getElementById('level-badge');
+    badge.style.background = lvl.bg;
+    badge.style.color = lvl.color;
+    badge.querySelector('i').className = 'ti ' + lvl.icon;
+    document.getElementById('level-label').textContent = lvl.label;
+
+    const logEl = document.getElementById('activity-log');
+    if (activityLog.length === 0) {
+      logEl.textContent = 'No actions logged yet. Start saving!';
+    } else {
+      const recent = activityLog.slice(-3).reverse();
+      logEl.innerHTML = recent.map(a =>
+        `<div class="activity-row">
+          <span>${a.action}</span>
+          <span class="activity-amount">+${parseFloat(a.amount).toFixed(2)} kg</span>
+        </div>`
+      ).join('');
+    }
+  }
+
+  /* ── Leaf particles ── */
+  function spawnLeaves(count) {
+    const c = document.getElementById('leaf-container');
+    const emojis = ['🌿','🍃','🌱','🌾','🍀'];
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'leaf-particle';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (10 + Math.random() * 80) + '%';
+        el.style.bottom = '10px';
+        el.style.fontSize = (14 + Math.random() * 10) + 'px';
+        el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+        c.appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+      }, i * 80);
+    }
+  }
+
+  /* ── Floating message ── */
+  function showFloatMsg(text, btn) {
+    const btnRect  = btn.getBoundingClientRect();
+    const rootRect = document.getElementById('eco-root').getBoundingClientRect();
+    const msg = document.createElement('div');
+    msg.className = 'float-msg';
+    msg.textContent = text;
+    msg.style.left = (btnRect.left - rootRect.left + btnRect.width / 2 - 20) + 'px';
+    msg.style.top  = (btnRect.top  - rootRect.top  - 10) + 'px';
+    document.getElementById('eco-root').appendChild(msg);
+    setTimeout(() => msg.remove(), 1050);
+  }
+
+  /* ── Log action ── */
+  function logAction(amount, action, btn) {
+    const prevLevel = getLevel(userSavings).label;
+    userSavings += amount;
+    activityLog.push({ action, amount, time: Date.now() });
+
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (lastLogDate !== today) {
+      streak = (lastLogDate === yesterday) ? streak + 1 : 1;
+      lastLogDate = today;
+    }
+
+    localStorage.setItem('eco_user_savings', userSavings);
+    localStorage.setItem('eco_streak', streak);
+    localStorage.setItem('eco_last_date', lastLogDate);
+    localStorage.setItem('eco_log', JSON.stringify(activityLog.slice(-20)));
+
+    const newLevel = getLevel(userSavings).label;
+    showFloatMsg(newLevel !== prevLevel ? '⬆️ Level up! ' + newLevel : '+' + amount.toFixed(2) + ' kg', btn);
+
+    const counter = document.getElementById('global-counter');
+    counter.style.transform = 'scale(1.08)';
+    setTimeout(() => counter.style.transform = 'scale(1)', 150);
+
+    spawnLeaves(6 + Math.floor(amount * 10));
+    updateUI();
+  }
+
+  /* ── Init ── */
+  updateUI();
+  setInterval(() => { globalSavings += 0.0015; updateUI(); }, 1500);
+  setInterval(() => spawnLeaves(1), 4000);
+  
+  // 📍 新增的清除数据函数
+function resetEcoGame() {
+    if (confirm("Are you sure you want to reset your eco impact data and start over?")) {
+        // 清除本地缓存的数据
+        localStorage.removeItem('eco_user_savings');
+        localStorage.removeItem('eco_streak');
+        localStorage.removeItem('eco_last_date');
+        localStorage.removeItem('eco_log');
+        
+        // 把当前运行时的变量恢复初始值
+        userSavings = 0;
+        streak = 0;
+        lastLogDate = null;
+        activityLog = [];
+        
+        // 刷新界面显示
+        updateUI();
+        alert("Game data has been reset to zero!");
+    }
+}
 </script>
 
 
