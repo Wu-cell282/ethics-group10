@@ -170,26 +170,22 @@
            3. 按钮设计：加厚版玻璃拟态 + 24px 大手指图标（超醒目，无惧任何背景压制）
            ========================================================================== */
         .eco-drawer-trigger {
-            background-color: rgba(46, 125, 50, 0.75); /* 加厚绿底，抗浅色背景 */
-            backdrop-filter: blur(16px);               /* 毛玻璃模糊特效 */
+            background-color: rgba(46, 125, 50, 0.75); 
+            backdrop-filter: blur(16px);               
             -webkit-backdrop-filter: blur(16px);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.35); /* 精致的白色镜面边缘高光 */
+            border: 1px solid rgba(255, 255, 255, 0.35); 
             border-left: none;
-            border-radius: 0 16px 16px 0;      /* 增大圆角，看起来更加圆润美观 */
+            border-radius: 0 12px 12px 0;      /* 增大圆角，看起来更加圆润美观 */
             
             /* 🚀 核心修改点：大幅度增加内边距与字体大小，让绿手指极其显眼 */
-            padding: 20px 16px;                
-            font-size: 24px;                   
+            padding: 12px 8px;                
+            font-size: 38px;                   
             
             cursor: pointer;
-            box-shadow: 6px 4px 25px rgba(0, 0, 0, 0.15); /* 加深立体阴影 */
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15); 
             position: absolute;
-            
-            /* 🚀 核心调整点：由于按钮宽了，修正偏移像素，防止被屏幕边缘遮挡 */
-            right: -52px;                      
             top: 30px;
-            
             display: flex;
             align-items: center;
             justify-content: center;
@@ -199,8 +195,8 @@
         /* 鼠标悬停时的优雅动态反馈 */
         .eco-drawer-trigger:hover { 
             background-color: rgba(30, 94, 33, 0.9); 
-            box-shadow: 6px 4px 30px rgba(46, 125, 50, 0.3);
-            padding-left: 20px; /* 悬浮时按钮会微微向右伸出，暗示可点击 */
+            box-shadow: 4px 4px 25px rgba(46, 125, 50, 0.3);
+            padding-left: 12px; /* 悬停时微微向右弹出 */
         }
         .eco-drawer-trigger span {
             display: inline-block;
