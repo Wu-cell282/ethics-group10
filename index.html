@@ -122,18 +122,16 @@
         }
 
 /* ==========================================================================
-           2. 环保游戏独立抽屉外壳与核心动画（Fixed 固定定位，完全脱离正常文档流）
+           2. 环保游戏独立抽屉外壳与核心动画（Fixed 固定定位）
            ========================================================================== */
         .eco-drawer-wrapper {
             position: fixed;
             left: -490px;
-            top: 8.5%; /* 已经按照要求上调到屏幕顶部的 8.5% 位置 */
+            top: 8%; /* 保持下移后的舒适垂直高度 */
             z-index: 9999;
             display: flex;
             align-items: flex-start;
-            transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            
-            /* 🔓 核心修改点：允许它里面的绿色大手指突破外壳边界，在屏幕上显示出来 */
+            transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             overflow: visible; 
         }
         .eco-drawer-wrapper.active { 
@@ -169,85 +167,146 @@
         }
 
 
+
+       
+
         /* ==========================================================================
-           3. 按钮设计：绿色面积缩小、手指单独放大的悬浮按钮（精密玻璃拟态质感）
-           ========================================================================== */
+           3. 按钮设计：Apple风 幻彩豪华显色光晕键（精密微调精简版）
+           ========================================================================= */
         .eco-drawer-trigger {
-            background-color: rgba(46, 125, 50, 0.75); 
-            backdrop-filter: blur(16px);               
-            -webkit-backdrop-filter: blur(16px);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.35); 
-            border-left: none;
-            border-radius: 0 12px 12px 0;      
-            
-            /* ✂️ 紧凑内边距：上下缩到 12px，左右缩到 8px，绿色背景面积大幅度削减 */
-            padding: 12px 8px;                
-            
-            /* 🚀 独立放大手指：拉大到 38px，让绿手指极其粗壮醒目 */
-            font-size: 38px;                   
-            
-            /* 📐 精密横向定位：让小面积的绿色按钮边框刚好完美扣在网页最左侧边缘 */
-            right: -55px;                      
-            
-            cursor: pointer;
-            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15); 
+            /* 📐 核心控制线：长 116px，高 48px，比例更协调，精致感回归 */
             position: absolute;
-            top: 30px;
+            top: 25px;
+            right: -116px; /* 📍 精密对齐新宽度（负数），防止贴边被裁剪 */
+            width: 116px;  /* 📍 按钮宽度 */
+            height: 48px;  /* 📍 按钮高度 */
+            padding: 0;
+            z-index: 10;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* ⚪ 顶级毛玻璃基底 */
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(20px) saturate(190%);
+            -webkit-backdrop-filter: blur(20px) saturate(190%);
+            
+            border-radius: 0 24px 24px 0; /* 📍 重新精密计算的半圆药丸圆角（48px的一半是24px） */
+            border: 1px solid rgba(255, 255, 255, 0.75); /* 更清晰透亮的切割镜面高光 */
+            border-left: none;
+            overflow: hidden; 
+
+            /* 💎 舒适层光晕：双重霓虹放射显色光晕，随按钮缩小同步减弱，高级不晃眼 */
+            box-shadow: 
+                inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.8),
+                inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.02),
+                0 0 20px rgba(16, 185, 129, 0.35),    /* 生态绿流光 */
+                0 0 40px rgba(6, 182, 212, 0.2),     /* 赛博蓝扩散 */
+                0 6px 18px rgba(15, 23, 42, 0.06);   /* 环境基础物理投影 */
+
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 鼠标悬停时的优雅动态反馈 */
-        .eco-drawer-trigger:hover { 
-            background-color: rgba(30, 94, 33, 0.9); 
-            box-shadow: 4px 4px 25px rgba(46, 125, 50, 0.3);
-            padding-left: 12px; /* 悬停时微微向右弹出 */
-        }
-        .eco-drawer-trigger span {
-            display: inline-block;
-            transition: transform 0.3s ease;
-        }
-        .eco-drawer-wrapper.active .eco-drawer-trigger span {
-            transform: rotate(180deg); /* 展开时 👉 会反转变成 👈 */
+        /* ✨ 底部彩虹幻彩微孔漏光 (Light Leak) */
+        .eco-drawer-trigger::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 6px; 
+            background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #f59e0b 100%);
+            filter: blur(2px); 
+            opacity: 0.9;
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* ➡️ PLAY 英文排版 */
+        .eco-drawer-trigger .play-text {
+            position: relative; 
+            z-index: 2; 
+            
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 15px;          /* 🚀 字号同步微调至 15px，在按钮内显得更加端庄 */
+            font-weight: 800;         
+            letter-spacing: 0.13em;   
+            color: #0f172a;           /* 雅致的深黛石墨色 */
+            line-height: 1;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* 🟢 鼠标悬停：等比例微调拉伸长度 */
+        .eco-drawer-trigger:hover {
+            background: rgba(255, 255, 255, 0.75);
+            width: 128px; /* 🚀 悬停拉伸宽度调整为 128px */
+            right: -128px;
+            box-shadow: 
+                inset 1.5px 1.5px 2px rgba(255, 255, 255, 1),
+                0 0 30px rgba(16, 185, 129, 0.55),    
+                0 0 60px rgba(6, 182, 212, 0.35),   
+                0 10px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .eco-drawer-trigger:hover::after {
+            height: 8px;
+            filter: blur(1.5px);
+            opacity: 1;
+        }
+
+        .eco-drawer-trigger:hover .play-text {
+            color: #047857; 
+            letter-spacing: 0.15em;
+        }
+
+        /* 🟢 机械阻尼按压 */
+        .eco-drawer-trigger:active {
+            transform: scaleX(0.88) scaleY(0.94);
+            transform-origin: left center;
+            background: rgba(255, 255, 255, 0.85);
+        }
 
         /* ==========================================================================
-           4. 主体面板设计：加厚版玻璃拟态（不透明度 0.88，绝对不会透出背景文字造成杂乱）
+           🔄 状态切换：点开抽屉后，颜色光晕全程锁死
+           ========================================================================== */
+        .eco-drawer-wrapper.active .eco-drawer-trigger {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 0 20px rgba(16, 185, 129, 0.25),
+                0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+        
+        .eco-drawer-wrapper.active .eco-drawer-trigger .play-text {
+            transform: none; 
+            color: #047857;
+        }
+
+        /* ==========================================================================
+           4. 主体面板设计：加厚版玻璃拟态（内容布局完全保持不变）
            ========================================================================== */
         #eco-root {
             position: relative;
             width: 480px;
-            background: rgba(255, 255, 255, 0.88);     /* 接近实体白但带有一点高级通透感 */
-            backdrop-filter: blur(25px);               /* 强力模糊，彻底隔绝背景 */
+            background: rgba(255, 255, 255, 0.88);     
+            backdrop-filter: blur(25px);               
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.6); /* 强化高光边缘质感 */
+            border: 1px solid rgba(255, 255, 255, 0.6); 
             border-radius: 16px;
             padding: 1.5rem 1.25rem;
-            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08); /* 适配主网页的柔和投影 */
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08); 
             overflow: hidden;
             min-height: 520px;
             font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
-
         /* ==========================================================================
-           5. 安全作用域防护网：以下所有组件内部样式全部强制绑定 #eco-root
-              （彻底杜绝组件样式对外扩散，百分之百保证你的主网页排版完好无损！）
+           5. 安全作用域防护网（完全保持原有布局）
            ========================================================================== */
-        #eco-root .eco-content { 
-            position: relative; 
-            z-index: 1; 
-        }
-        #eco-root .eco-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
+        #eco-root .eco-content { position: relative; z-index: 1; }
+        #eco-root .eco-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
         #eco-root .eco-title  { font-size: 20px; font-weight: 600; color: #1b5e20; }
         #eco-root .eco-sub    { font-size: 13px; color: #666; margin-top: 2px; }
 
@@ -277,40 +336,14 @@
             font-family: 'Courier New', monospace;
             transition: transform 0.12s;
         }
-        #eco-root .goal-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #666;
-            margin: 8px 0 4px;
-        }
-        #eco-root .goal-track {
-            height: 6px;
-            background: #d5ecd5;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        #eco-root .goal-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #43a047, #1b5e20);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
+        #eco-root .goal-meta { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin: 8px 0 4px; }
+        #eco-root .goal-track { height: 6px; background: #d5ecd5; border-radius: 10px; overflow: hidden; }
+        #eco-root .goal-fill { height: 100%; background: linear-gradient(90deg, #43a047, #1b5e20); border-radius: 10px; transition: width 0.5s ease; }
         #eco-root .tree-line { font-size: 12px; color: #555; margin-top: 8px; }
         #eco-root .tree-line span { font-weight: 600; color: #2e7d32; }
 
-        #eco-root .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 1rem;
-        }
-        #eco-root .stat-card {
-            background: #f9fdf9;
-            border: 1px solid #d5ecd5;
-            border-radius: 10px;
-            padding: 12px;
-        }
+        #eco-root .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+        #eco-root .stat-card { background: #f9fdf9; border: 1px solid #d5ecd5; border-radius: 10px; padding: 12px; }
         #eco-root .stat-label { font-size: 11px; color: #777; margin-bottom: 2px; }
         #eco-root .stat-value { font-size: 20px; font-weight: 700; color: #1b5e20; font-family: 'Courier New', monospace; }
 
@@ -335,30 +368,10 @@
         #eco-root .eco-btn:hover { background: #e8f5e9; box-shadow: 0 4px 10px rgba(46,125,50,0.15); }
         #eco-root .eco-btn:active { transform: scale(0.96); }
 
-        #eco-root .impact-badge {
-            font-size: 11px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 2px 7px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
+        #eco-root .impact-badge { font-size: 11px; background: #e8f5e9; color: #2e7d32; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
 
-        #eco-root .activity-log {
-            background: #f5fbf5;
-            border: 1px solid #d5ecd5;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #555;
-            min-height: 40px;
-        }
-        #eco-root .activity-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1px solid #e8f5e8;
-        }
+        #eco-root .activity-log { background: #f5fbf5; border: 1px solid #d5ecd5; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #555; min-height: 40px; }
+        #eco-root .activity-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #e8f5e8; }
         #eco-root .activity-row:last-child { border-bottom: none; }
         #eco-root .activity-amount { color: #2e7d32; font-weight: 600; }
     </style>
@@ -1630,7 +1643,7 @@ Carbon footprint refers to the total amount of carbon dioxide and other greenhou
     </div>
 </div><div id="ecoDrawer" class="eco-drawer-wrapper">
   <button class="eco-drawer-trigger" onclick="toggleEcoWidget()" aria-label="Toggle Eco-Warriors panel">
-    <span>👉</span>
+      <span class="play-text">Play</span>
   </button>
 
   <div id="eco-root">
